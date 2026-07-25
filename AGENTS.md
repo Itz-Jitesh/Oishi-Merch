@@ -309,13 +309,13 @@ Code changes and documentation changes are **the same task**, not two separate t
 
 > **Agent instruction:** The fields below must be filled in from verified project information — from an existing README, from `PROJECT_STATE.md`, or from direct clarification with the user/maintainer. Do **not** invent plausible-sounding answers to these fields. If a field is unknown at the time this document is first created, write `UNKNOWN — requires clarification` rather than a guess, and raise it per the [Clarification Protocol](#12-clarification-protocol).
 
-- **Project name:** UNKNOWN — requires clarification
-- **Purpose:** UNKNOWN — requires clarification
-- **Vision:** UNKNOWN — requires clarification
-- **Business goals:** UNKNOWN — requires clarification
-- **Target audience:** UNKNOWN — requires clarification
-- **Project scope:** UNKNOWN — requires clarification
-- **Non-goals:** UNKNOWN — requires clarification (explicitly list what this project is *not* trying to be, once known)
+- **Project name:** Oishi Merch
+- **Purpose:** A frontend-only anime merchandise storefront prototype with storefront, catalog, search, cart, checkout UI, account UI, auth UI, and admin UI screens.
+- **Vision:** Build toward a polished anime merchandise e-commerce experience. The current implementation is a static/client-side prototype and does not yet implement production commerce systems.
+- **Business goals:** Support direct-to-consumer merchandise browsing and purchasing once backend, persistence, authentication, checkout, and admin workflows are implemented.
+- **Target audience:** Anime merchandise shoppers and fans browsing apparel/accessory-style products.
+- **Project scope:** Currently implemented scope includes public storefront pages, product/category/collection browsing, local search/filtering, wishlist, cart UI, checkout UI, order UI, account UI, auth UI, admin UI, and static informational pages.
+- **Non-goals:** The current codebase does not implement a marketplace, backend commerce engine, payment processing, real authentication, database persistence, mobile app, loyalty system, or social/community features.
 
 ### 7.1 Guiding Philosophies
 

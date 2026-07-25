@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 
 export default function EditProduct() {
   const { id } = useParams();

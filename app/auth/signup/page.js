@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +15,68 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [agree, setAgree] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO
+
+    if (!name || !email || !password || !confirmPassword) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    if (!agree) {
+      alert("Please accept the Terms and Privacy Policy.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: name,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to create account.");
+        return;
+      }
+
+      //toast.success(data.message || "Account created successfully. Please verify your email.");
+
+      // Optional: clear the form
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setAgree(false);
+    
+      router.replace("/auth/verify?mode=signup");
+
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleAuth = () => {
@@ -81,8 +138,8 @@ export default function SignupPage() {
           <Label htmlFor="confirm">Confirm password</Label>
           <PasswordInput
             id="confirm"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             autoComplete="new-password"
           />
         </div>
@@ -96,7 +153,7 @@ export default function SignupPage() {
           </Label>
         </div>
 
-        <Button type="submit" className="w-full rounded-xl">
+        <Button type="submit" disabled={loading} className="w-full rounded-xl">
           Create account
         </Button>
       </form>

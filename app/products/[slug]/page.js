@@ -7,7 +7,7 @@ import { Heart, ShoppingBag, Truck, RotateCcw, Shield } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 
 function ProductMissing() {
   return (

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
-import { PRODUCTS, CATEGORIES } from "@/lib/products";
+import { PRODUCTS, CATEGORIES } from "@/data/product";
 
 export default function ProductsPage() {
   const [active, setActive] = useState("all");

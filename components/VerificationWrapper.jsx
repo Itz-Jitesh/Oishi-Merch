@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { AuthCard } from "./AuthCard";
 import { OtpInput } from "./OtpInput";
+import { toast } from "sonner";
+
 
 const COPY = {
   signup: {
@@ -17,12 +20,30 @@ const COPY = {
   },
 };
 
-export function VerificationWrapper({ mode = "signup" }) {
-  const [digits, setDigits] = useState(["", "", "", "", "", ""]);
+export function VerificationWrapper({ mode = "signup", email }) {
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const router = useRouter();
   const copy = COPY[mode] ?? COPY.signup;
 
-  const handleVerify = () => {
-    // TODO
+  const handleVerify = async () => {
+    const response = await fetch("/api/auth/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        otp: otp.join(""),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      toast.success(data.message);
+      router.push("/auth/login");
+    } else {
+      toast.error(data.message);
+    }
   };
 
   const handleResend = () => {
@@ -46,7 +67,7 @@ export function VerificationWrapper({ mode = "signup" }) {
         </>
       }
     >
-      <OtpInput value={digits} onChange={setDigits} />
+      <OtpInput value={otp} onChange={setOtp} />
 
       <Button onClick={handleVerify} className="w-full rounded-xl">
         Verify

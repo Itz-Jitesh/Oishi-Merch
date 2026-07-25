@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 
 export default function WishlistPage() {
   const items = PRODUCTS.slice(2, 8);

@@ -6,67 +6,8 @@ import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import Link from "next/link";
-
-const HERO_SLIDES = [
-  {
-    title: "Winter '26 drop",
-    sub: "Cozy oversized tees inspired by your favorite slice-of-life arcs.",
-    cta: "Shop the drop",
-    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=2000&q=80",
-  },
-  {
-    title: "Studio-signed posters",
-    sub: "Limited edition prints, numbered and shipped in protective tubes.",
-    cta: "Browse posters",
-    image: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&w=2000&q=80",
-  },
-  {
-    title: "Collector pins are back",
-    sub: "Hard enamel, glow variants, mystery packs — all restocked.",
-    cta: "Shop pins",
-    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=2000&q=80",
-  },
-];
-
-const CATEGORIES = [
-  {
-    name: "Apparel",
-    count: "120+ pieces",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    name: "Posters & Prints",
-    count: "80+ designs",
-    image: "https://images.unsplash.com/photo-1561728590-029b6d29a7f7?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    name: "Collectibles",
-    count: "60+ items",
-    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=900&q=80",
-  },
-];
-
-const PRODUCTS = [
-  { name: "Ramen Cat Tee", price: "$32", tag: "Bestseller", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=700&q=80" },
-  { name: "Sakura Hoodie", price: "$68", tag: "New", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=700&q=80" },
-  { name: "Mecha Poster Set", price: "$24", tag: null, image: "https://images.unsplash.com/photo-1558981852-426c6c22a060?auto=format&fit=crop&w=700&q=80" },
-  { name: "Onigiri Sticker Pack", price: "$8", tag: "Restock", image: "https://images.unsplash.com/photo-1604066867775-43f48e3957d8?auto=format&fit=crop&w=700&q=80" },
-  { name: "Studio Tote", price: "$28", tag: null, image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=700&q=80" },
-  { name: "Glow Enamel Pin", price: "$12", tag: "Limited", image: "https://images.unsplash.com/photo-1611042553365-9b101441c135?auto=format&fit=crop&w=700&q=80" },
-];
-
-const REVIEWS = [
-  { name: "Mika R.", body: "The tee feels premium and the print didn't crack after a dozen washes. Obsessed.", rating: 5 },
-  { name: "Devon L.", body: "Poster arrived flawless in a sturdy tube. The colors are way richer than the photos.", rating: 5 },
-  { name: "Aisha K.", body: "Shipping was fast and the packaging itself is a keepsake. Will reorder.", rating: 5 },
-];
-
-const OCCASIONS = [
-  { name: "Comicon", image: "https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?auto=format&fit=crop&w=700&q=80" },
-  { name: "Outdoors", image: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?auto=format&fit=crop&w=700&q=80" },
-  { name: "Everyday", image: "https://images.unsplash.com/photo-1485518882345-15568b007407?auto=format&fit=crop&w=700&q=80" },
-  { name: "Loungewear", image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=700&q=80" },
-];
+import { HERO_SLIDES, CATEGORIES, PRODUCTS } from "@/data/product";
+import { REVIEWS } from "@/data/reviews";
 
 function HeroLoop() {
   const [idx, setIdx] = useState(0);
@@ -196,6 +137,84 @@ function ProductCarousel() {
     </section>
   );
 }
+function CategoryCarousel() {
+  const scroller = useRef(null);
+
+  const scroll = (dir) => {
+    const el = scroller.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.8;
+    el.scrollBy({
+      left: dir * amount,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <section className="mx-auto max-w-7xl px-5 py-10">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <p className="mb-1 text-sm font-medium uppercase tracking-wider text-primary">
+            Shop by category
+          </p>
+          <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
+            Pick your poison
+          </h2>
+        </div>
+
+        <div className="hidden gap-2 md:flex">
+          <button
+            onClick={() => scroll(-1)}
+            aria-label="Previous"
+            className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card text-foreground transition hover:bg-secondary"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <button
+            onClick={() => scroll(1)}
+            aria-label="Next"
+            className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card text-foreground transition hover:bg-secondary"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={scroller}
+        className="-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {CATEGORIES.map((c) => (
+          <Link
+            key={c.name}
+            href="/"
+            className="group relative aspect-[4/5] w-[75%] shrink-0 snap-start overflow-hidden rounded-2xl sm:w-[50%] md:w-[32%] lg:w-[28%]"
+            style={{ boxShadow: "var(--shadow-soft)" }}
+          >
+            <img
+              src={c.image}
+              alt={c.name}
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
+
+            <div className="absolute inset-x-0 bottom-0 p-6 text-background">
+              <h3 className="font-display text-2xl font-bold">
+                {c.name}
+              </h3>
+
+              <p className="text-sm text-background/80">
+                {c.count}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -204,38 +223,7 @@ export default function HomePage() {
 
       <HeroLoop />
 
-      {/* Tag line band */}
-      <section className="mx-auto max-w-7xl px-5 pt-10 text-center">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary">
-          Shop by category
-        </p>
-        <h2 className="mt-2 font-display text-3xl font-bold text-foreground md:text-4xl">
-          Pick your poison
-        </h2>
-      </section>
-
-      {/* Categories */}
-      <section className="mx-auto grid max-w-7xl gap-5 px-5 py-10 md:grid-cols-3">
-        {CATEGORIES.map((c) => (
-          <Link
-            key={c.name}
-            href="/"
-            className="group relative aspect-[4/5] overflow-hidden rounded-2xl"
-            style={{ boxShadow: "var(--shadow-soft)" }}
-          >
-            <img
-              src={c.image}
-              alt={c.name}
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-background">
-              <h3 className="font-display text-2xl font-bold">{c.name}</h3>
-              <p className="text-sm text-background/80">{c.count}</p>
-            </div>
-          </Link>
-        ))}
-      </section>
+      <CategoryCarousel />
 
       <ProductCarousel />
 
@@ -294,37 +282,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Occasions */}
-      <section className="mx-auto max-w-7xl px-5 py-16">
-        <div className="mb-8 text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary">
-            Style it your way
-          </p>
-          <h2 className="mt-2 font-display text-3xl font-bold text-foreground md:text-4xl">
-            Fits for every occasion
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {OCCASIONS.map((o) => (
-            <Link
-              key={o.name}
-              href="/"
-              className="group relative aspect-[3/4] overflow-hidden rounded-2xl"
-            >
-              <img
-                src={o.image}
-                alt={o.name}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-foreground/30 transition group-hover:bg-foreground/50" />
-              <span className="absolute inset-0 grid place-items-center font-display text-2xl font-bold text-background">
-                {o.name}
-              </span>
-            </Link>
-          ))}
         </div>
       </section>
 

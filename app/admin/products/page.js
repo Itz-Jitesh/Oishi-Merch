@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 import { Button } from "@/components/ui/button";
 
 export default function AdminProducts() {

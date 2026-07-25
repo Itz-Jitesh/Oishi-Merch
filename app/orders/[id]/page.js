@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 
 export default function OrderDetail() {
   const { id } = useParams();

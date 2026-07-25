@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 
 export default function CartPage() {
   const [items, setItems] = useState(

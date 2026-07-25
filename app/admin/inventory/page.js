@@ -1,6 +1,6 @@
 "use client";
 
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS } from "@/data/product";
 
 export default function AdminInventory() {
   return (

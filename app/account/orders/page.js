@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ORDERS } from "@/lib/products";
+import { ORDERS } from "@/data/product";
 
 export default function AccountOrdersPage() {
   return (

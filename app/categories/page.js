@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
-import { CATEGORIES, PRODUCTS } from "@/lib/products";
+import { CATEGORIES, PRODUCTS } from "@/data/product";
 
 export default function CategoriesPage() {
   return (
