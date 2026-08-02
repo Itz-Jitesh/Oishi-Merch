@@ -25,7 +25,7 @@ export async function POST(request) {
         return Response.json(
             {
                 success: false,
-                message: "Email already exists.",
+                message: "Invalid credentials. Please try again.",
             },
             {
                 status: 409,

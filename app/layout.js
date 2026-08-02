@@ -1,6 +1,7 @@
 import { Bricolage_Grotesque, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import Providers from "@/app/providers";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -37,8 +38,10 @@ export default function RootLayout({ children }) {
       className={`${bricolage.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        {children}
-        <Toaster />
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

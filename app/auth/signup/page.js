@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AuthCard } from "@/components/AuthCard";
 import { PasswordInput } from "@/components/PasswordInput";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import { toast } from "sonner";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -24,17 +25,17 @@ export default function SignupPage() {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmPassword) {
-      alert("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
     if (!agree) {
-      alert("Please accept the Terms and Privacy Policy.");
+      toast.error("Please accept the Terms and Privacy Policy.");
       return;
     }
 
@@ -68,7 +69,7 @@ export default function SignupPage() {
       setPassword("");
       setConfirmPassword("");
       setAgree(false);
-    
+      toast.success(data.message || "Account created successfully. Please verify your email.");
       router.replace("/auth/verify?mode=signup");
 
     } catch (error) {

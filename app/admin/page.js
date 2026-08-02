@@ -4,6 +4,7 @@ export default function AdminPage() {
     { l: "Orders", v: "324", chg: "+8%" },
     { l: "Customers", v: "1,204", chg: "+21%" },
     { l: "Avg cart", v: "$56.20", chg: "+3%" },
+
   ];
   return (
     <div className="space-y-6">

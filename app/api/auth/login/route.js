@@ -1,11 +1,11 @@
 import User from "@/models/users";
 import connectDB from "@/lib/db/connect";
 import bcrypt from "bcrypt";
-
+import { cookies } from "next/headers";
+import { generateToken } from "@/lib/jwt/generateToken";
 export async function POST(request) {
 
-    const { email, password, remember } = await request.json();
-    console.log("Received login request:", { email, password, remember });
+    const { email, password} = await request.json();
 
     await connectDB();
 
@@ -23,6 +23,7 @@ export async function POST(request) {
 
     const user = await User.findOne({ email });
 
+
     if (!user) {
         return Response.json(
             {
@@ -37,36 +38,52 @@ export async function POST(request) {
     }
 
     const isMatch = await bcrypt.compare(
-    password,
-    user.password
-);
+        password,
+        user.password
+    );
 
-if (!isMatch) {
+    if (!isMatch) {
+        return Response.json(
+            {
+                success: false,
+                message: "Invalid email or password."
+            },
+            {
+                status: 401,
+            }
+        );
+    }
+
+    const token = generateToken(user._id.toString());
+
+    (await cookies()).set("token", token, {
+
+        httpOnly: true,
+
+        secure: process.env.NODE_ENV === "production",
+
+        sameSite: "strict",
+
+        path: "/",
+
+        maxAge: 60 * 60 * 24 * 7,
+
+    });
+
     return Response.json(
         {
-            success: false,
-            message: "Invalid email or password."
+            success: true,
+            message: "Login successful.",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                emailVerified: user.emailVerified,
+                role: user.role,
+            },
         },
         {
-            status: 401,
+            status: 200,
         }
     );
-}
-
-return Response.json(
-    {
-        success: true,
-        message: "Login successful.",
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            role: user.role,
-        },
-    },
-    {
-        status: 200,
-    }
-);
 }

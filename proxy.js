@@ -1,0 +1,31 @@
+import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
+export function proxy(request) {
+  const token = request.cookies.get("token")?.value;
+
+  if (!token) {
+    return NextResponse.redirect(
+      new URL("/auth/login", request.url)
+    );
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    return NextResponse.next();
+  } catch {
+    return NextResponse.redirect(
+      new URL("/auth/login", request.url)
+    );
+  }
+}
+
+export const config = {
+  matcher: [
+    "/account/:path*",
+    "/checkout/:path*",
+    "/admin/:path*",
+    "/order/:path*",
+    "/wishlist/:path*",
+  ],
+};

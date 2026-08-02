@@ -10,11 +10,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AuthCard } from "@/components/AuthCard";
 import { PasswordInput } from "@/components/PasswordInput";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -31,7 +31,6 @@ export default function LoginPage() {
         body: JSON.stringify({
           email,
           password,
-          remember,
         }),
       });
 
@@ -41,7 +40,7 @@ export default function LoginPage() {
         alert(data.message);
         return;
       }
-      
+
       router.push("/");
     } catch (error) {
       console.error("Login error:", error);
@@ -52,7 +51,9 @@ export default function LoginPage() {
   };
 
   const handleGoogleAuth = () => {
-    // TODO
+    signIn("google", {
+      callbackUrl: "/",
+    });
   };
 
   const handleGithubAuth = () => {
@@ -98,14 +99,6 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
-        <div className="flex items-center gap-2">
-          <Checkbox id="remember" checked={remember} onCheckedChange={(v) => setRemember(Boolean(v))} />
-          <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground">
-            Remember me on this device
-          </Label>
-        </div>
-
         <Button type="submit" disabled={loading} className="w-full rounded-xl">
           Log in
         </Button>

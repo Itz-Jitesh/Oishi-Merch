@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      default: null,
     },
 
     role: {
@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
 
-    avatar: {
+    image: {
       type: String,
       default: "",
     },
@@ -46,6 +46,12 @@ const UserSchema = new mongoose.Schema(
     otpExpiry: {
       type: Date,
       default: null,
+    },
+
+    provider: {
+      type: String,
+      enum: ["credentials", "google"],
+      default: "credentials",
     },
 
     otpPurpose: {

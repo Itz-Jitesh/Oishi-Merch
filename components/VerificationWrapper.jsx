@@ -46,8 +46,24 @@ export function VerificationWrapper({ mode = "signup", email }) {
     }
   };
 
-  const handleResend = () => {
-    // TODO
+  const handleResend = async () => {
+    const response = await fetch("/api/auth/resend", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        otp: otp.join(""),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      toast.success(data.message);
+    } else {
+      toast.error(data.message);
+    }
   };
 
   return (

@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { LayoutDashboard, Package, ShoppingCart, Users, Boxes, BarChart3, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { getCurrentUser } from "@/lib/jwt/getCurrentUser";
+import { notFound } from "next/navigation";
+
+const user = await getCurrentUser();
+
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -18,7 +23,14 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminLayout({ children }) {
+export default async function AdminLayout({ children }) {
+  const user = await getCurrentUser();
+
+  if (!user || user.role !== "admin") {
+    console.log("User is not an admin or not logged in:", user);
+    notFound();
+  }
+
   return (
     <div className="min-h-screen bg-secondary/20">
       <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-border bg-card p-4 md:flex">
