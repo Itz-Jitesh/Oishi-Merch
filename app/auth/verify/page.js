@@ -10,7 +10,7 @@ function VerifyContent() {
   const mode =
     searchParams.get("mode") === "reset-password"
       ? "reset-password"
-      : "signup";
+      : "email-verification";
 
   const email = searchParams.get("email");
 

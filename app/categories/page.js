@@ -7,11 +7,11 @@ export default function CategoriesPage() {
     <PageShell title="Categories" subtitle="Pick a lane. All drops sorted by silhouette." wide>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         {CATEGORIES.map((c) => {
-          const sample = PRODUCTS.find((p) => p.category === c);
+          const sample = PRODUCTS.find((p) => p.category === c.name);
           return (
             <Link
-              key={c}
-              href={`/categories/${c}`}
+              key={c.id}
+              href={`/categories/${c.name}`}
               className="group overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-card)]"
             >
               <div
@@ -21,9 +21,9 @@ export default function CategoriesPage() {
                 }}
               />
               <div className="flex items-center justify-between p-4">
-                <h3 className="font-display text-lg capitalize">{c}</h3>
+                <h3 className="font-display text-lg capitalize">{c.name}</h3>
                 <span className="text-xs text-muted-foreground">
-                  {PRODUCTS.filter((p) => p.category === c).length} items
+                  {PRODUCTS.filter((p) => p.category === c.name).length} items
                 </span>
               </div>
             </Link>

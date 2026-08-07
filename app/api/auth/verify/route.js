@@ -44,7 +44,6 @@ export async function POST(request) {
     );
   }
 
-  // Optional if you're already using a TTL index
   if (user.otpExpiry < new Date()) {
     return Response.json(
       {
@@ -67,29 +66,69 @@ export async function POST(request) {
     );
   }
 
-  await User.updateOne(
-    { email },
-    {
-      $set: {
-        emailVerified: true,
-      },
-      $unset: {
-        otp: "",
-        otpExpiry: "",
-        otpPurpose: "",
-      },
-    }
-  );
+  if (user.otpPurpose === "email-verification") {
+    await User.updateOne(
+      { email },
+      {
+        $set: {
+          emailVerified: true,
+        },
+        $unset: {
+          otp: "",
+          otpExpiry: "",
+          otpPurpose: "",
+        },
+      }
+    );
 
-  cookieStore.delete("verification_email");
+    cookieStore.delete("verification_email");
 
-  return Response.json(
-    {
+    return Response.json({
       success: true,
+      purpose: "email-verification",
+      redirectTo: "/login",
       message: "Email verified successfully.",
-    },
-    {
-      status: 200,
-    }
-  );
+    });
+  }
+
+  if (user.otpPurpose === "password-reset") {
+
+    cookieStore.set("password_reset_email", email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 10, // 10 mins
+    });
+
+    await User.updateOne(
+      { email },
+      {
+        $unset: {
+          otp: "",
+          otpExpiry: "",
+          otpPurpose: "",
+        },
+      }
+    );
+
+    cookieStore.delete("verification_email");
+
+    return Response.json({
+      success: true,
+      purpose: "password-reset",
+      redirectTo: "/newpassword",
+      message: "OTP verified.",
+    });
+
+  } else {
+    return Response.json(
+      {
+        success: false,
+        message: "Invalid OTP purpose.",
+      },
+      { status: 400 }
+    );
+  
+  }
 }

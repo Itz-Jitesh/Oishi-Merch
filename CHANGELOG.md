@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-07
+
+**Summary:** Fixed category mapping logic so UI components read category object fields (`id`, `name`, `image`) instead of treating each category as a string.
+
+**Affected files:** `app/categories/page.js`, `app/search/page.js`
+
+**Related decision:** None.
+
 ## 2026-07-24
 
 **Summary:** Filled repository context Markdown files from the verified current Next.js codebase. Documented the app as a frontend-only Oishi Merch prototype with local data, no API layer, no database, no implemented authentication, and static/client-side storefront, account, checkout, order, and admin screens.
@@ -7,3 +15,7 @@
 **Affected files:** `AGENTS.md`, `PROJECT_STATE.md`, `CURRENT_ARCHITECTURE.md`, `FEATURES.md`, `DATABASE.md`, `API.md`, `ROADMAP.md`, `KNOWN_DECISIONS.md`, `KNOWN_DECISION.md`, `PROJECT_CONTEXT.md`, `README.md`, `CLAUDE.md`
 
 **Related decision:** `KNOWN_DECISIONS.md` entry "Use repository context files as verified project memory"
+
+## 2026-08-02
+**Summary:** Updated documentation to reflect the addition of MongoDB and NextAuth authentication integrations. The codebase is no longer purely static/client-side and includes backend routing, User/Product schemas, and functional authentication routes.
+**Affected files:** `PROJECT_STATE.md`, `CURRENT_ARCHITECTURE.md`, `FEATURES.md`, `DATABASE.md`, `API.md`

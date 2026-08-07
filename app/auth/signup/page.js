@@ -11,6 +11,7 @@ import { AuthCard } from "@/components/AuthCard";
 import { PasswordInput } from "@/components/PasswordInput";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -57,7 +58,7 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Failed to create account.");
+        toast.error(data.message || "Failed to create account.");
         return;
       }
 
@@ -70,22 +71,20 @@ export default function SignupPage() {
       setConfirmPassword("");
       setAgree(false);
       toast.success(data.message || "Account created successfully. Please verify your email.");
-      router.replace("/auth/verify?mode=signup");
+      router.replace("/auth/verify?mode=email-verification");
 
     } catch (error) {
       console.error(error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleAuth = () => {
-    // TODO
-  };
-
-  const handleGithubAuth = () => {
-    // TODO
+    signIn("google", {
+      callbackUrl: "/",
+    });
   };
 
   return (
@@ -159,7 +158,7 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <SocialAuthButtons onGoogle={handleGoogleAuth} onGithub={handleGithubAuth} />
+      <SocialAuthButtons onGoogle={handleGoogleAuth} />
     </AuthCard>
   );
 }

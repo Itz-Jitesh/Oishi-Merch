@@ -24,17 +24,27 @@ export default function ProductsPage() {
 
         {/* category pill bar */}
         <div className="mb-8 flex items-center gap-2 overflow-x-auto rounded-full border border-border bg-card p-2 shadow-[var(--shadow-card)]">
-          {["all", ...CATEGORIES].map((c) => (
+          <button
+            key="all"
+            onClick={() => setActive("all")}
+            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm capitalize transition ${active === "all"
+                ? "bg-primary text-primary-foreground shadow"
+                : "text-foreground hover:bg-secondary"
+              }`}
+          >
+            All
+          </button>
+
+          {CATEGORIES.map((category) => (
             <button
-              key={c}
-              onClick={() => setActive(c)}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm capitalize transition ${
-                active === c
+              key={category.id}
+              onClick={() => setActive(category.name)}
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm capitalize transition ${active === category.name
                   ? "bg-primary text-primary-foreground shadow"
                   : "text-foreground hover:bg-secondary"
-              }`}
+                }`}
             >
-              {c}
+              {category.name}
             </button>
           ))}
         </div>

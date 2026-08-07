@@ -1,34 +1,49 @@
 # Database
 
-**Last updated:** 2026-07-24
+**Last updated:** 2026-08-02
 
-No database is currently implemented.
+The application currently uses MongoDB for persistence, with Mongoose as the Object Data Modeling (ODM) library.
 
 ## Current Persistence
 
-- Product, category, and sample order data is stored in JavaScript arrays in `lib/products.js`.
-- Some pages define additional local arrays inline, such as home page merchandising data, admin orders, customers, analytics bars, and public order lists.
-- Cart state and notification preference state are stored only in component memory with React `useState`.
-- Form inputs are not persisted.
+- **Authentication and Users**: User accounts, Google OAuth mapping, and credentials (with bcrypt hashing) are persisted in MongoDB.
+- **Products**: A Product schema exists in MongoDB, though some legacy pages still import local arrays from `lib/products.js`. The transition to fully database-backed products is in progress.
+- **Orders/Cart**: Currently still largely client-side or mocked.
 
 ## Schemas
 
-No tables, collections, schemas, migrations, indexes, constraints, models, or validation schemas are implemented.
+### User Schema (`models/users.js`)
+- `username`: String, required, unique
+- `email`: String, required, unique
+- `password`: String (hashed), for credentials auth
+- `role`: String enum (`user`, `admin`), default `user`
+- `emailVerified`: Boolean
+- `image`: String (avatar URL)
+- `otp`: String, for email verification/password reset
+- `otpExpiry`: Date
+- `provider`: String enum (`credentials`, `google`), default `credentials`
+- `otpPurpose`: String enum (`email-verification`, `password-reset`)
+- *Timestamps*: enabled
+
+### Product Schema (`models/product.js`)
+- `name`: String, required
+- `slug`: String, required, unique
+- `description`: String, required
+- `price`: Number, required, min 0
+- `category`: String, required, indexed
+- `keywords`: Array of Strings
+- `embedding`: Array of Numbers (for semantic search / recommendations)
+- `images`: Array of Strings
+- `stock`: Number, default 0
+- `rating`: Number, default 0, max 5
+- `reviewCount`: Number, default 0
+- *Timestamps*: enabled
 
 ## Relationships
 
-No database relationships are implemented.
+No complex inter-document relationships (e.g. `ref`) are strictly enforced via schemas yet, though logical relationships will exist between Users and Orders in the future.
 
 ## Data Access Pattern
 
-No repository or data-access abstraction exists. Pages import local arrays directly.
-
-## Required Future Decisions
-
-Before adding persistence, decide and document:
-
-- Database technology.
-- Product, category, collection, customer, cart, order, inventory, and admin user schemas.
-- Validation strategy.
-- Migration or schema-management strategy.
-- Server-side access pattern and ownership boundaries.
+- **Mongoose Models**: Queries are handled via Mongoose models (`User`, `Product`).
+- **Connection Management**: Managed by `lib/db/connect.js`, which caches the connection to avoid multiple connections in serverless environments.

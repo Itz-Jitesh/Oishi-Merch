@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/users";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
@@ -9,19 +11,88 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         }),
-    ],
+
+
+        Credentials({
+
+            name: "credentials",
+
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" },
+            },
+
+            async authorize(credentials) {
+                await connectDB();
+
+                const { email, password } = credentials;
+
+                if (!email || !password) {
+                    return null;
+                }
+
+                const user = await User.findOne({ email });
+
+                if (!user) {
+                    return null;
+                }
+
+                if (!user.password) {
+                    return null;
+                }
+
+                const isMatch = await bcrypt.compare(password, user.password);
+
+                if (!isMatch) {
+                    return null
+                }
+
+                return {
+                    id: user._id.toString(),
+                    name: user.username,
+                    email: user.email,
+                    image: user.image,
+                    role: user.role,
+                    provider: user.provider,        
+                    emailVerified: user.emailVerified,
+                };
+
+            },
+
+        }),
+    ],  
 
     callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+                token.role = user.role;
+                token.provider = user.provider;
+                token.emailVerified = user.emailVerified;
+            }
+
+            return token;
+        },
+
+        async session({ session, token }) {
+            session.user.id = token.id;
+            session.user.role = token.role;
+            session.user.provider = token.provider;
+            session.user.emailVerified = token.emailVerified;
+
+            return session;
+        },
+
         async signIn({ user, account }) {
             await connectDB();
 
             if (account?.provider === "google") {
-                const existingUser = await User.findOne({
+                let dbUser = await User.findOne({
                     email: user.email,
                 });
 
-                if (!existingUser) {
-                    await User.create({
+                if (!dbUser) {
+                    dbUser = await User.create({
                         username: user.name,
                         email: user.email,
                         image: user.image,
@@ -30,60 +101,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         emailVerified: true,
                     });
                 }
+
+                user.id = dbUser._id.toString();
+                user.role = dbUser.role;
+                user.provider = dbUser.provider;
+                user.emailVerified = dbUser.emailVerified;
             }
-            Credentials({
-                async authorize(credentials) {
-                    const { email, password } = await request.json();
-
-                    await connectDB();
-
-                    if (!email || !password) {
-                        return Response.json(
-                            {
-                                success: false,
-                                message: "Email and password are required."
-                            },
-                            {
-                                status: 400
-                            }
-                        );
-                    }
-
-                    const user = await User.findOne({ email });
-
-
-                    if (!user) {
-                        return Response.json(
-                            {
-                                success: false,
-                                message: "Invalid email or password."
-                            },
-                            {
-                                status: 401
-                            }
-                        );
-
-                    }
-
-                    const isMatch = await bcrypt.compare(
-                        password,
-                        user.password
-                    );
-
-                    if (!isMatch) {
-                        return Response.json(
-                            {
-                                success: false,
-                                message: "Invalid email or password."
-                            },
-                            {
-                                status: 401,
-                            }
-                        );
-                    }
-
-                }
-            })
 
             return true;
         },

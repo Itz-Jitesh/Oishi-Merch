@@ -1,29 +1,50 @@
 # API
 
-**Last updated:** 2026-07-24
+**Last updated:** 2026-08-02
 
-No application API endpoints are currently implemented.
+The application now includes authentication API endpoints using NextAuth and custom route handlers.
 
 ## Verified Route Handlers
 
-There are no `app/**/route.*` files in the repository. No REST, RPC, server action, webhook, auth callback, payment, product, cart, order, user, or admin endpoints exist today.
+The following authentication API endpoints exist under `app/api/auth/`:
 
-## Current Data Access
+### `[...nextauth]`
+- **Method**: GET, POST
+- **Path**: `/api/auth/[...nextauth]`
+- **Description**: NextAuth catch-all route for handling Google OAuth and standard NextAuth callbacks.
+- **Dependencies**: NextAuth, Google Provider, MongoDB (User model).
 
-Pages import local JavaScript arrays directly from `lib/products.js` or define hardcoded data inline. Forms either prevent default submission or contain TODO handlers.
+### `/login`
+- **Method**: POST (implied)
+- **Path**: `/api/auth/login`
+- **Description**: Custom credential login handler.
+- **Dependencies**: MongoDB (User model), bcrypt.
+
+### `/logout`
+- **Method**: POST / GET (implied)
+- **Path**: `/api/auth/logout`
+- **Description**: Handles user logout and session invalidation.
+
+### `/signup`
+- **Method**: POST (implied)
+- **Path**: `/api/auth/signup`
+- **Description**: Handles new user registration via credentials. Creates a User in MongoDB.
+- **Dependencies**: MongoDB (User model), bcrypt.
+
+### `/verify`
+- **Method**: POST
+- **Path**: `/api/auth/verify`
+- **Description**: Endpoint for verifying OTP/email tokens.
+
+### `/resend`
+- **Method**: POST
+- **Path**: `/api/auth/resend`
+- **Description**: Resends verification OTP/email.
 
 ## Authentication Requirements
 
-No API authentication requirements are defined because there are no APIs and no authentication mechanism is implemented.
+APIs are partially authenticated. NextAuth manages sessions via JWT. Secure routes verify the session token.
 
-## Future API Documentation Requirements
+## Current Data Access
 
-When endpoints are added, document each one with:
-
-- HTTP method and path.
-- Authentication and authorization requirements.
-- Request shape.
-- Response shape.
-- Error responses.
-- Status codes.
-- Dependencies such as services, repositories, and database entities.
+Most frontend components still import local JavaScript arrays from `lib/products.js`, but Authentication uses real API calls to the above endpoints, connected to MongoDB.

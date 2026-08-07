@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ORDERS } from "@/data/product";
 
 export default function AccountOrdersPage() {
+
+  const ORDERS = []
   return (
     <div className="space-y-3">
       <h2 className="font-display text-2xl">Order history</h2>

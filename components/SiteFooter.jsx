@@ -4,7 +4,7 @@ import { Instagram, Twitter, Youtube } from "lucide-react";
 const COLS = [
   {
     title: "Shop",
-    links: ["New In", "Tees", "Hoodies", "Posters", "Accessories"],
+    links: ["New In", "T-Shirt", "Hoodies", "Posters", "Accessories"],
   },
   {
     title: "Help",

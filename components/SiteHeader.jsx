@@ -97,7 +97,7 @@ export function SiteHeader() {
             <Heart size={18} />
           </Link>
           <Link
-            href="/auth/login"
+            href="/account"
             className="hidden h-10 w-10 place-items-center rounded-xl text-foreground hover:bg-secondary md:grid"
             aria-label="Account"
           >
@@ -166,7 +166,7 @@ export function SiteHeader() {
               <Heart size={18} /> Wishlist
             </Link>
             <Link
-              href="/auth/login"
+              href="/account"
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-xl px-3 py-3 text-base text-foreground hover:bg-secondary"
             >

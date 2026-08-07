@@ -40,10 +40,16 @@ export function VerificationWrapper({ mode = "signup", email }) {
 
     if (data.success) {
       toast.success(data.message);
-      router.push("/auth/login");
     } else {
       toast.error(data.message);
     }
+
+    if (data.purpose === "email-verification") {
+      router.push("/auth/login");
+    } else if (data.purpose === "password-reset") {
+      router.push("/auth/new-password");
+    }
+
   };
 
   const handleResend = async () => {

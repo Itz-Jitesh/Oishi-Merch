@@ -1,30 +1,30 @@
 # Features
 
-**Last updated:** 2026-07-24
+**Last updated:** 2026-08-02
 
 ## Storefront Home
 
 - **Purpose:** Presents the Oishi Merch brand, featured drops, categories, products, reviews, and shopping entry points.
-- **Status:** Complete as static/client-side UI.
-- **Dependencies:** `SiteHeader`, `SiteFooter`, local arrays inside `app/page.js`, lucide-react icons.
+- **Status:** Complete as static/client-side UI (transitioning to backend).
+- **Dependencies:** `SiteHeader`, `SiteFooter`, local arrays, lucide-react icons.
 - **Entry points:** `/`
 - **Routes involved:** `/`
 - **Components involved:** `HeroLoop`, `ProductCarousel`, `SiteHeader`, `SiteFooter`
 - **API usage:** None.
-- **Database usage:** None.
-- **Known future improvements:** Use the canonical product data source, replace hardcoded hero/category/product content with managed content, and connect CTAs to real collection/category destinations.
+- **Database usage:** None currently (planned to use Mongoose).
+- **Known future improvements:** Use the canonical product data source from MongoDB, replace hardcoded hero/category/product content with managed content.
 
 ## Product Catalog
 
 - **Purpose:** Lets users browse all products and filter by category.
-- **Status:** Complete as local-data UI.
-- **Dependencies:** `lib/products.js`
+- **Status:** Complete as local-data UI (transitioning to backend).
+- **Dependencies:** `lib/products.js` (legacy)
 - **Entry points:** Header `Shop` link and product links.
 - **Routes involved:** `/products`, `/products/[slug]`
 - **Components involved:** `ProductCard`, `SiteHeader`, `SiteFooter`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Add real slugs, inventory data, images, server-side product loading, and add-to-cart persistence.
+- **Known future improvements:** Connect directly to MongoDB `Product` model for inventory, images, and server-side product loading.
 
 ## Categories
 
@@ -36,7 +36,7 @@
 - **Components involved:** `PageShell`, `ProductCard`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Add category metadata, images, SEO metadata, and not-found handling for unknown categories.
+- **Known future improvements:** Fetch categories dynamically from MongoDB products.
 
 ## Collections
 
@@ -48,7 +48,7 @@
 - **Components involved:** `PageShell`, `ProductCard`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Model collections as real data and map products to collections.
+- **Known future improvements:** Model collections as real data in MongoDB and map products to collections.
 
 ## Search And Filtering
 
@@ -60,7 +60,7 @@
 - **Components involved:** `ProductCard`, `SiteHeader`, `SiteFooter`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Add server-backed search, URL synchronization for interactive filters, pagination, and richer product fields.
+- **Known future improvements:** Add server-backed search querying MongoDB, pagination, and vector search leveraging `embedding` array in Product model.
 
 ## Wishlist
 
@@ -72,7 +72,7 @@
 - **Components involved:** `PageShell`, `ProductCard`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Persist wishlist per user and connect product detail wishlist actions.
+- **Known future improvements:** Persist wishlist per user in the database and connect product detail wishlist actions.
 
 ## Cart
 
@@ -84,7 +84,7 @@
 - **Components involved:** `SiteHeader`, `SiteFooter`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Connect add-to-cart buttons, persist cart state, share cart count with header, and route checkout from the primary action.
+- **Known future improvements:** Connect add-to-cart buttons, persist cart state to DB or session, and route checkout from the primary action.
 
 ## Checkout
 
@@ -108,31 +108,31 @@
 - **Components involved:** `PageShell`
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Persist orders, authorize access, and fetch order line items by order ID.
+- **Known future improvements:** Persist orders in DB, authorize access via NextAuth, and fetch real order line items.
 
 ## Account
 
 - **Purpose:** Provides customer account screens for overview, profile, addresses, security, orders, and notifications.
-- **Status:** Static/client-side UI.
-- **Dependencies:** `app/account/layout.js`, `NavLink`, local state for notifications.
+- **Status:** Initial integration.
+- **Dependencies:** `app/account/layout.js`, `NavLink`.
 - **Entry points:** Header account link and account subnavigation.
 - **Routes involved:** `/account`, `/account/profile`, `/account/addresses`, `/account/security`, `/account/orders`, `/account/notifications`
 - **Components involved:** `SiteHeader`, `SiteFooter`, `NavLink`
-- **API usage:** None.
-- **Database usage:** None.
-- **Known future improvements:** Add authentication, user persistence, form submission, and protected routes.
+- **API usage:** NextAuth session usage.
+- **Database usage:** Fetch user information via NextAuth session.
+- **Known future improvements:** Full dynamic data fetching for user profile, address management.
 
 ## Authentication UI
 
 - **Purpose:** Provides login, signup, password reset, verification, and success screens.
-- **Status:** UI-only; handlers are TODO/no-op.
-- **Dependencies:** `AuthCard`, `PasswordInput`, `SocialAuthButtons`, `VerificationWrapper`, `OtpInput`
+- **Status:** Integrated with backend.
+- **Dependencies:** `AuthCard`, `PasswordInput`, `SocialAuthButtons`, `VerificationWrapper`, `OtpInput`, NextAuth
 - **Entry points:** `/auth/login`, `/auth/signup`, `/auth/reset-password`, `/auth/verify`, `/auth/success`
 - **Routes involved:** Auth routes listed above.
 - **Components involved:** Auth shared components.
-- **API usage:** None.
-- **Database usage:** None.
-- **Known future improvements:** Choose and implement auth provider, session storage, validation, email/OTP delivery, OAuth callbacks, and route protection.
+- **API usage:** Custom auth handlers (`/api/auth/login`, `/api/auth/signup`) and NextAuth.
+- **Database usage:** Mongoose `User` model handles checking/creating users.
+- **Known future improvements:** Finalize email/OTP delivery via `lib/mailer.js`.
 
 ## Admin
 
@@ -144,7 +144,7 @@
 - **Components involved:** Admin layout/sidebar, shadcn-style form controls.
 - **API usage:** None.
 - **Database usage:** None.
-- **Known future improvements:** Add admin authentication/authorization, persistence, CRUD APIs, validation, and real analytics.
+- **Known future improvements:** Protect admin routes via NextAuth roles, CRUD APIs for products and orders directly via Mongoose.
 
 ## Informational Pages
 

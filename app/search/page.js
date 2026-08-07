@@ -84,14 +84,14 @@ function SearchContent() {
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Category</p>
               <div className="mt-2 space-y-2">
                 {CATEGORIES.map((c) => (
-                  <label key={c} className="flex cursor-pointer items-center gap-2 text-sm">
+                  <label key={c.id} className="flex cursor-pointer items-center gap-2 text-sm">
                     <input
                       type="checkbox"
-                      checked={selected.includes(c)}
-                      onChange={() => toggle(c)}
+                      checked={selected.includes(c.name)}
+                      onChange={() => toggle(c.name)}
                       className="accent-[color:var(--primary)]"
                     />
-                    <span className="capitalize">{c}</span>
+                    <span className="capitalize">{c.name}</span>
                   </label>
                 ))}
               </div>

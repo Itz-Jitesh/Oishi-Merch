@@ -11,6 +11,7 @@ import { AuthCard } from "@/components/AuthCard";
 import { PasswordInput } from "@/components/PasswordInput";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -23,28 +24,23 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message);
+      if (result?.error) {
+        toast.error("Invalid email or password.");
         return;
       }
 
       router.push("/");
+      toast.success("Logged in successfully.");
+      router.refresh();
     } catch (error) {
       console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -55,11 +51,7 @@ export default function LoginPage() {
       callbackUrl: "/",
     });
   };
-
-  const handleGithubAuth = () => {
-    // TODO
-  };
-
+  
   return (
     <AuthCard
       heading="Welcome back"
@@ -104,7 +96,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <SocialAuthButtons onGoogle={handleGoogleAuth} onGithub={handleGithubAuth} />
+      <SocialAuthButtons onGoogle={handleGoogleAuth} />
     </AuthCard>
   );
 }

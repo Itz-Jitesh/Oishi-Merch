@@ -1,83 +1,55 @@
 # Project State
 
-**Last updated:** 2026-07-24
+**Last updated:** 2026-08-02
 
 ## Current Phase
 
-Oishi Merch is a static, frontend-only e-commerce prototype built with Next.js App Router. The repository currently implements storefront, account, auth, order, checkout, and admin UI screens using local hardcoded data and client-side state.
+The project is currently transitioning from a static/client-side UI prototype to a full-stack Next.js application backed by MongoDB. Authentication has been implemented using NextAuth.
 
 ## Completed Features
 
-- Public storefront home page at `/` with a rotating hero, category cards, product carousel, review band, occasion links, and newsletter-style content.
-- Product catalog at `/products` with client-side category filtering.
-- Product detail pages at `/products/[slug]` backed by local product data.
-- Category listing and category detail pages at `/categories` and `/categories/[slug]`.
-- Collection listing and collection detail pages at `/collections` and `/collections/[slug]`.
-- Search page at `/search` with local query, category, price, and sort filtering.
-- Wishlist page at `/wishlist` with a static subset of local products.
-- Cart page at `/cart` with local quantity adjustment, removal, subtotal, shipping, and total calculations.
-- Checkout page at `/checkout` with static contact, shipping, payment, and order summary UI.
-- Static order list and detail pages at `/orders` and `/orders/[id]`.
-- Account area with layout navigation and pages for overview, profile, addresses, security, orders, and notifications.
-- Auth UI pages for login, signup, reset password, verification, and success flows.
-- Admin UI area with dashboard, products, product create/edit forms, orders, customers, inventory, analytics, and settings pages.
-- Static informational pages for about, contact, FAQ, privacy, and terms.
-- Shared shell, header, footer, product card, auth, password, OTP, nav-link, and shadcn-style UI primitives.
+- Responsive shell layout (header, footer, navigation).
+- UI component library integration (shadcn/ui via Radix).
+- All primary consumer-facing and admin-facing pages built with mock data.
+- **Authentication**: Backend setup with NextAuth, MongoDB integration, credential and Google OAuth strategies.
+- **Database Connection**: MongoDB connection caching and models for User and Product established.
 
-## In-Progress Work
+## In Progress
 
-- Authentication pages exist as forms, but submit handlers and social auth handlers are TODO/no-op.
-- Checkout and admin forms render and prevent default submission, but do not persist or submit data.
-- Cart and notification settings use in-memory React state only.
+- Connecting static/mocked pages (like product catalogs and carts) to the actual MongoDB data via Mongoose.
+- Integrating authentication sessions into the UI, restricting admin routes and tying user accounts to orders.
+- Moving from client-side state models for things like Cart to backend/database persistence.
 
 ## Blocked Work
 
-- Real authentication is blocked because no auth provider, session strategy, middleware, protected route checks, or backend auth endpoints are implemented.
-- Real checkout is blocked because no payment provider, order API, persistence layer, or server-side validation is implemented.
-- Real admin management is blocked because there are no API endpoints, database models, or authorization checks.
+None known at this time.
 
 ## Missing Systems
 
-- No `app/api/**/route.*` files are present.
-- No database schema, migrations, models, repositories, or persistence layer are present.
-- No middleware file is present.
-- No environment example file is present.
-- No automated tests are present.
-- No real image asset pipeline is used for products; catalog cards use gradients from product color values, while the home page uses remote Unsplash image URLs.
+- Payment gateway integration.
+- Order processing system.
+- Email delivery infrastructure (though structure exists in `lib/mailer.js`).
+- Image upload and storage solution (currently referencing remote/local static URLs).
 
-## Backend Status
+## Current Status by Domain
 
-No backend is currently implemented. The application has no route handlers, server actions, services, repositories, or database integration.
+### Backend Status
+The MongoDB connection is robust and schemas are defined for core entities (User, Product). The NextAuth backend has been configured to support Credentials (with bcrypt) and Google OAuth. Some core API routes are scaffolded under `app/api/auth/`.
 
-## Frontend Status
+### Frontend Status
+Frontend is primarily built and structured as Server Components by default where applicable, with client-side interactivity where needed. Many pages currently rely on mock data in `lib/products.js` or inline arrays.
 
-The frontend is implemented with Next.js 16 App Router, React 19, JavaScript files, Tailwind CSS v4, lucide-react icons, and shadcn-style UI components. Most pages are static or client-side interactive prototypes.
+### Authentication Status
+Configured securely via NextAuth utilizing JSON Web Tokens (JWT) for session strategy. Includes database persistence for users, supporting both email/password with verification OTPs and OAuth (Google).
 
-## Authentication Status
+### Deployment Status
+Designed to be deployed on Vercel or any Node.js environment supporting Next.js. Currently running in a local development environment. Environment variables for MongoDB and NextAuth must be configured for deployment.
 
-Authentication is UI-only. Login, signup, reset-password, verification, and success pages exist, but there is no real login, signup, password reset, OTP verification, session storage, route protection, or role handling.
+### Testing Status
+No automated tests are currently implemented. 
 
-## Deployment Status
+### Current Known Issues
+- UI still relies heavily on mock data, leading to a disconnect between the Database and the Frontend representation in some areas.
 
-No deployment configuration is implemented beyond default Next.js configuration files. The README still references the default Next.js/Vercel deployment workflow.
-
-## Testing Status
-
-No test framework, test files, or test script are currently present. The available quality script is `npm run lint`.
-
-## Known Issues
-
-- Header cart badge is hardcoded to `2` and is not connected to cart state.
-- Home page product/category data duplicates and differs from `lib/products.js`.
-- Cart, checkout, account, auth, and admin state is not persisted.
-- Admin and account routes are not protected.
-- Product detail route uses product IDs as slugs.
-- Several forms prevent default submission without saving or sending data.
-- `KNOWN_DECISION.md` existed with the wrong singular filename; `KNOWN_DECISIONS.md` has been added as the canonical decision file.
-
-## Current Technical Debt
-
-- Replace hardcoded local data with a documented data source when backend requirements are known.
-- Add API, database, auth, and validation layers before treating the app as production e-commerce.
-- Add tests for shared components and client-side behavior.
-- Consolidate product data sources so the home page and catalog use one verified source.
+### Technical Debt
+- Discrepancy between implemented backend models (`models/product.js`) and frontend consumption (still using `lib/products.js` mocked data).

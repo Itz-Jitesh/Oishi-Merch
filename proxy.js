@@ -1,24 +1,15 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { auth } from "@/auth";
 
-export function proxy(request) {
-  const token = request.cookies.get("token")?.value;
-
-  if (!token) {
+export default auth((req) => {
+  if (!req.auth) {
     return NextResponse.redirect(
-      new URL("/auth/login", request.url)
+      new URL("/auth/login", req.url)
     );
   }
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET);
-    return NextResponse.next();
-  } catch {
-    return NextResponse.redirect(
-      new URL("/auth/login", request.url)
-    );
-  }
-}
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: [
@@ -27,5 +18,6 @@ export const config = {
     "/admin/:path*",
     "/order/:path*",
     "/wishlist/:path*",
+    "/cart/:path*",
   ],
 };
