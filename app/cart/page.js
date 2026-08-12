@@ -1,27 +1,68 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { PRODUCTS } from "@/data/product";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
-  const [items, setItems] = useState(
-    PRODUCTS.slice(0, 4).map((p) => ({ ...p, qty: 1 })),
-  );
+  const [items, setItems] = useState([]);
+  const router = useRouter();
+  const update = async (id, size, delta) => {
+    const response = await fetch(`/api/cart/update`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, size, delta }),
+    });
 
-  const update = (id, delta) =>
-    setItems((arr) =>
-      arr
-        .map((i) => (i.id === id ? { ...i, qty: Math.max(0, i.qty + delta) } : i))
-        .filter((i) => i.qty > 0),
+    if (!response.ok) return;
+
+    setItems((prevItems) =>
+      prevItems
+        .map((item) =>
+          item.id === id && item.size === size
+            ? { ...item, qty: item.qty + delta }
+            : item
+        )
+        .filter((item) => item.qty > 0)
     );
-  const remove = (id) => setItems((arr) => arr.filter((i) => i.id !== id));
+  };
+
+  useEffect(() => {
+    const loadCart = async () => {
+      const response = await fetch("/api/cart");
+      if (!response.ok) return;
+      const data = await response.json();
+      setItems(data.items);
+    };
+    loadCart();
+  }, []);
+
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+    router.push("/checkout");
+  }
+
+  const remove = async (id, size) => {
+    const response = await fetch(`/api/cart/delete`, {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id , size }),
+    });
+    if (!response.ok) return;
+    setItems((prevItems) => prevItems.filter((item) => !(item.id === id && item.size === size)));
+    toast.success("Item removed from cart.");
+  }
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = subtotal > 75 ? 0 : 8;
+  const shipping = 0;
   const total = subtotal + shipping;
 
   return (
@@ -57,10 +98,12 @@ export default function CartPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-medium text-foreground">{i.name}</h3>
-                      <p className="text-xs capitalize text-muted-foreground">{i.category}</p>
+                      <p className="text-xs capitalize text-muted-foreground">
+                        {i.category} {i.size && `• Size: ${i.size.toUpperCase()}`}
+                      </p>
                     </div>
                     <button
-                      onClick={() => remove(i.id)}
+                      onClick={() => remove(i.id, i.size)}
                       className="text-muted-foreground hover:text-primary"
                       aria-label="Remove"
                     >
@@ -70,7 +113,7 @@ export default function CartPage() {
                   <div className="mt-2 flex items-center justify-between">
                     <div className="inline-flex items-center rounded-full border border-border">
                       <button
-                        onClick={() => update(i.id, -1)}
+                        onClick={() => update(i.id, i.size, -1)}
                         className="p-2 text-foreground hover:text-primary"
                         aria-label="Decrease"
                       >
@@ -78,7 +121,7 @@ export default function CartPage() {
                       </button>
                       <span className="min-w-6 text-center text-sm">{i.qty}</span>
                       <button
-                        onClick={() => update(i.id, 1)}
+                        onClick={() => update(i.id, i.size, 1)}
                         className="p-2 text-foreground hover:text-primary"
                         aria-label="Increase"
                       >
@@ -86,7 +129,7 @@ export default function CartPage() {
                       </button>
                     </div>
                     <span className="font-semibold text-primary">
-                      ${(i.price * i.qty).toFixed(2)}
+                      ₹{(i.price * i.qty).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -101,22 +144,22 @@ export default function CartPage() {
               <dl className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Subtotal</dt>
-                  <dd className="text-foreground">${subtotal.toFixed(2)}</dd>
+                  <dd className="text-foreground">₹{subtotal.toFixed(2)}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Shipping</dt>
                   <dd className="text-foreground">
-                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                    {shipping === 0 ? "Free" : `₹${shipping.toFixed(2)}`}
                   </dd>
                 </div>
                 <div className="my-3 border-t border-border" />
                 <div className="flex justify-between text-base">
                   <dt className="font-medium text-foreground">Total</dt>
-                  <dd className="font-display text-xl text-primary">${total.toFixed(2)}</dd>
+                  <dd className="font-display text-xl text-primary">₹{total.toFixed(2)}</dd>
                 </div>
               </dl>
               <button
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => handleCheckout(e)}
                 disabled={items.length === 0}
                 className="mt-6 w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow transition hover:opacity-90 disabled:opacity-50"
               >

@@ -18,7 +18,7 @@ export default function AccountOrdersPage() {
             <p className="font-medium">{o.id}</p>
             <p className="text-xs text-muted-foreground">{o.date} · {o.items} items · {o.status}</p>
           </div>
-          <p className="font-display text-primary">${o.total.toFixed(2)}</p>
+          <p className="font-display text-primary">₹{o.total.toFixed(2)}</p>
         </Link>
       ))}
     </div>

@@ -19,3 +19,8 @@
 ## 2026-08-02
 **Summary:** Updated documentation to reflect the addition of MongoDB and NextAuth authentication integrations. The codebase is no longer purely static/client-side and includes backend routing, User/Product schemas, and functional authentication routes.
 **Affected files:** `PROJECT_STATE.md`, `CURRENT_ARCHITECTURE.md`, `FEATURES.md`, `DATABASE.md`, `API.md`
+
+## 2026-08-12
+**Summary:** Rebuilt order success page for Next.js App Router format and fixed AccountPage async client component runtime error.
+**Affected files:** `app/checkout/success/page.js`, `app/checkout/success/OrderSuccessClient.jsx`, `app/account/page.js`, `FEATURES.md`
+

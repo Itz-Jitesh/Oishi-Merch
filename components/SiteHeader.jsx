@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState,useEffect} from "react";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 
 const NAV = [
@@ -14,17 +14,18 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
   const handleSearchSubmit = (e) => {
     if (e.key === "Enter" && searchQuery.trim()) {
       window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
     }
   };
 
+  
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <div className="bg-foreground py-2 text-center text-xs font-medium text-background">
-        Free shipping over $60 · New Winter '26 drop is live
+        Free shipping over ₹60 · New Winter '26 drop is live
       </div>
 
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-5">
@@ -109,9 +110,7 @@ export function SiteHeader() {
             aria-label="Cart"
           >
             <ShoppingBag size={18} />
-            <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-              2
-            </span>
+
           </Link>
         </div>
       </div>

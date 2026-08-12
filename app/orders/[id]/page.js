@@ -27,17 +27,17 @@ export default function OrderDetail() {
                 <p className="font-medium">{p.name}</p>
                 <p className="text-xs text-muted-foreground">Qty 1</p>
               </div>
-              <p className="text-sm">${p.price}</p>
+              <p className="text-sm">₹{p.price}</p>
             </div>
           ))}
         </section>
         <aside className="rounded-2xl border border-border bg-card p-6">
           <h2 className="font-display text-lg">Summary</h2>
           <dl className="mt-4 space-y-2 text-sm">
-            <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd>${subtotal.toFixed(2)}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd>₹{subtotal.toFixed(2)}</dd></div>
             <div className="flex justify-between"><dt className="text-muted-foreground">Shipping</dt><dd>Free</dd></div>
             <div className="my-2 border-t border-border" />
-            <div className="flex justify-between"><dt className="font-medium">Total</dt><dd className="font-display text-primary">${subtotal.toFixed(2)}</dd></div>
+            <div className="flex justify-between"><dt className="font-medium">Total</dt><dd className="font-display text-primary">₹{subtotal.toFixed(2)}</dd></div>
           </dl>
           <div className="mt-6 text-xs text-muted-foreground">
             Shipping to 123 Sakura Ave, Kyoto

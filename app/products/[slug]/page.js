@@ -8,6 +8,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { PRODUCTS } from "@/data/product";
+import { toast } from "sonner"
+
 
 function ProductMissing() {
   return (
@@ -34,7 +36,7 @@ function PageError() {
 
 export default function ProductDetail() {
   const { slug } = useParams();
-  const product = PRODUCTS.find((p) => p.id === slug);
+  const product = PRODUCTS.find((p) => p.slug === slug);
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);
 
@@ -43,6 +45,29 @@ export default function ProductDetail() {
   }
 
   const related = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
+
+  const handlerAddToCart = async () => {
+    const response = await fetch("/api/cart/add", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        id: product.id,
+        size,
+        quantity: qty
+    })
+
+});
+
+    if (!response.ok) {
+      toast.error("Couldn't add item to cart.");
+      return;
+    }
+    // console.log("message:", response.message);
+    // setCartCount((count) => count + qty);
+    toast.success(response.message || `${product.name} added to cart`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -64,7 +89,7 @@ export default function ProductDetail() {
               {product.category}
             </span>
             <h1 className="mt-2 font-display text-4xl text-foreground">{product.name}</h1>
-            <p className="mt-3 font-display text-2xl text-primary">${product.price}</p>
+            <p className="mt-3 font-display text-2xl text-primary">₹{product.price}</p>
 
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
               Premium heavyweight fabric with a soft hand-feel. Screen-printed graphics inspired by
@@ -78,11 +103,10 @@ export default function ProductDetail() {
                   <button
                     key={s}
                     onClick={() => setSize(s)}
-                    className={`h-10 w-12 rounded-full border text-sm transition ${
-                      size === s
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-card text-foreground hover:border-primary"
-                    }`}
+                    className={`h-10 w-12 rounded-full border text-sm transition ${size === s
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground hover:border-primary"
+                      }`}
                   >
                     {s}
                   </button>
@@ -96,7 +120,8 @@ export default function ProductDetail() {
                 <span className="min-w-8 text-center">{qty}</span>
                 <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2">+</button>
               </div>
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow">
+              <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow"
+                onClick={handlerAddToCart}>
                 <ShoppingBag className="h-4 w-4" /> Add to cart
               </button>
               <button
@@ -109,7 +134,7 @@ export default function ProductDetail() {
 
             <ul className="mt-8 grid grid-cols-3 gap-3 text-xs text-muted-foreground">
               <li className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card p-3 text-center">
-                <Truck className="h-4 w-4 text-primary" /> Free ship $75+
+                <Truck className="h-4 w-4 text-primary" /> Free ship ₹75+
               </li>
               <li className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card p-3 text-center">
                 <RotateCcw className="h-4 w-4 text-primary" /> 30-day returns
@@ -125,9 +150,9 @@ export default function ProductDetail() {
           <h2 className="mb-6 font-display text-2xl">You may also like</h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {related.map((p) => (
-              <Link key={p.id} href={`/products/${p.id}`}>
-                <ProductCard product={p} />
-              </Link>
+
+              <ProductCard key={p.id} product={p} />
+
             ))}
           </div>
         </section>

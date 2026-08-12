@@ -26,7 +26,7 @@ export default function OrdersPage() {
               </p>
             </div>
             <div className="text-right">
-              <p className="font-display text-lg text-primary">${o.total.toFixed(2)}</p>
+              <p className="font-display text-lg text-primary">₹{o.total.toFixed(2)}</p>
               <span className="text-xs uppercase tracking-wide text-muted-foreground">{o.status}</span>
             </div>
           </Link>

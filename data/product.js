@@ -678,8 +678,32 @@ export const HERO_SLIDES = [
 ];
 
 export const COLLECTIONS = [
-  { slug: "winter-26", name: "Winter '26", desc: "Cozy oversized cuts", grad: "linear-gradient(160deg,#B1EDE8,#F7AF9D)" },
-  { slug: "spirit-realm", name: "Spirit Realm", desc: "Limited pieces", grad: "linear-gradient(160deg,#FF6978,#FFD6BA)" },
-  { slug: "neon-tokyo", name: "Neon Tokyo", desc: "Streetwear capsule", grad: "linear-gradient(160deg,#2D3142,#FF6978)" },
-  { slug: "onsen", name: "Onsen", desc: "Loungewear essentials", grad: "linear-gradient(160deg,#C8E7E2,#B1EDE8)" },
+  { 
+    slug: "winter-26", 
+    name: "Winter '26", 
+    desc: "Cozy oversized cuts", 
+    grad: "linear-gradient(160deg,#B1EDE8,#F7AF9D)",
+    productIds: [1, 2, 4, 6, 7, 8, 10] // Heavyweight, fleece, and relaxed-fit hoodies/tees
+  },
+  { 
+    slug: "spirit-realm", 
+    name: "Spirit Realm", 
+    desc: "Limited pieces", 
+    grad: "linear-gradient(160deg,#FF6978,#FFD6BA)",
+    productIds: [2, 7, 10, 17, 23, 26, 29, 35] // Foxes, wolves, ghosts, and yokai items
+  },
+  { 
+    slug: "neon-tokyo", 
+    name: "Neon Tokyo", 
+    desc: "Streetwear capsule", 
+    grad: "linear-gradient(160deg,#2D3142,#FF6978)",
+    productIds: [3, 5, 9, 16, 19, 25, 28, 34] // Cyberpunk, mecha, and streetwear pieces
+  },
+  { 
+    slug: "onsen", 
+    name: "Onsen", 
+    desc: "Loungewear essentials", 
+    grad: "linear-gradient(160deg,#C8E7E2,#B1EDE8)",
+    productIds: [4, 8, 13, 24, 32, 35, 36, 37] // Sakura, cozy, and traditional relaxation items
+  },
 ];

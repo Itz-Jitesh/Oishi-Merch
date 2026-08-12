@@ -98,7 +98,7 @@ function SearchContent() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Max price: ${price}
+                Max price: ₹{price}
               </p>
               <input
                 type="range"

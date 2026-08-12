@@ -91,8 +91,8 @@
 - **Purpose:** Shows contact, shipping, payment, and order-summary form UI.
 - **Status:** UI-only; submit prevents default and does not create orders or payments.
 - **Dependencies:** `PageShell`, shadcn-style `Input` and `Button`
-- **Entry points:** `/checkout`
-- **Routes involved:** `/checkout`
+- **Entry points:** `/checkout`, `/checkout/success`
+- **Routes involved:** `/checkout`, `/checkout/success`
 - **Components involved:** `PageShell`
 - **API usage:** None.
 - **Database usage:** None.

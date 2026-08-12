@@ -50,7 +50,7 @@ export default function ProductsPage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_180px]">
-          <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 ">
             {list.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -64,7 +64,7 @@ export default function ProductsPage() {
               >
                 <span className="text-xs uppercase tracking-widest">Member perk</span>
                 <div>
-                  <h3 className="font-display text-xl leading-tight">Free patch on orders $75+</h3>
+                  <h3 className="font-display text-xl leading-tight">Free patch on orders ₹75+</h3>
                   <Link
                     href="/cart"
                     className="mt-3 inline-block rounded-full bg-foreground px-4 py-1.5 text-xs text-background"
