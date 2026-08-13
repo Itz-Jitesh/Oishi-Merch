@@ -4,7 +4,8 @@ import crypto from "crypto";
 import { PRODUCTS } from "@/data/product";
 import { auth } from "@/auth";
 import connectDB from "@/lib/db/connect";
-import Order from "@/models/order";
+import Order from "@/models/orders";
+import User from "@/models/users";
 
 export async function POST(req) {
     try {
@@ -134,6 +135,12 @@ export async function POST(req) {
             razorpayPaymentId: razorpay_payment_id,
 
             paymentStatus: "completed",
+        });
+
+        const loyaltyPointsEarned = Math.floor(total / 10);
+
+        await User.findByIdAndUpdate(session.user.id, {
+            $inc: { loyaltyPoints: loyaltyPointsEarned },
         });
 
         // 8. Clear cart

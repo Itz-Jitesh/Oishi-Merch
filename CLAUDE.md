@@ -51,7 +51,6 @@ This file mirrors the verified repository context for agents that read `CLAUDE.m
 - `/account/addresses`
 - `/account/notifications`
 - `/account/orders`
-- `/account/profile`
 - `/account/security`
 - `/admin`
 - `/admin/analytics`

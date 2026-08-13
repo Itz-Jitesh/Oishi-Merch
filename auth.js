@@ -99,6 +99,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         password: null,
                         provider: "google",
                         emailVerified: true,
+                        ordersCount: 0,
+                        wishlistCount: 0,
+                        loyaltyPoints: 0,
                     });
                 }
 

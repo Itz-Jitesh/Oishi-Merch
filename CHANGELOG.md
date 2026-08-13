@@ -1,6 +1,15 @@
 # Changelog
 
+## 2026-08-13
+
+**Summary:** Added converted `AuthRequiredDialog` Next.js component to prompt unauthenticated users before redirecting on protected actions or views.
+
+**Affected files:** `components/AuthRequiredDialog.jsx`
+
+**Related decision:** None.
+
 ## 2026-08-07
+
 
 **Summary:** Fixed category mapping logic so UI components read category object fields (`id`, `name`, `image`) instead of treating each category as a string.
 
@@ -21,6 +30,6 @@
 **Affected files:** `PROJECT_STATE.md`, `CURRENT_ARCHITECTURE.md`, `FEATURES.md`, `DATABASE.md`, `API.md`
 
 ## 2026-08-12
-**Summary:** Rebuilt order success page for Next.js App Router format and fixed AccountPage async client component runtime error.
-**Affected files:** `app/checkout/success/page.js`, `app/checkout/success/OrderSuccessClient.jsx`, `app/account/page.js`, `FEATURES.md`
+**Summary:** Rebuilt order success page for Next.js App Router format, fixed AccountPage async client component runtime error, fixed User model schema caching and Google OAuth creation to persist loyaltyPoints, ordersCount, and wishlistCount, and removed stale Profile navigation item from Account layout sidebar.
+**Affected files:** `app/checkout/success/page.js`, `app/checkout/success/OrderSuccessClient.jsx`, `app/account/page.js`, `models/users.js`, `auth.js`, `app/api/auth/signup/route.js`, `app/api/account/overview/route.js`, `app/account/layout.js`, `FEATURES.md`, `CLAUDE.md`
 

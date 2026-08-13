@@ -1,11 +1,10 @@
-import { User, MapPin, Shield, Package, Bell, LayoutGrid } from "lucide-react";
+import { MapPin, Shield, Package, Bell, LayoutGrid } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NavLink } from "@/components/NavLink";
 
 const NAV = [
   { href: "/account", label: "Overview", icon: LayoutGrid, exact: true },
-  { href: "/account/profile", label: "Profile", icon: User },
   { href: "/account/addresses", label: "Addresses", icon: MapPin },
   { href: "/account/security", label: "Security", icon: Shield },
   { href: "/account/orders", label: "Orders", icon: Package },

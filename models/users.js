@@ -38,6 +38,18 @@ const UserSchema = new mongoose.Schema(
       default: "",
     },
 
+    wishlistCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    loyaltyPoints: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     otp: {
       type: String,
       default: null,
@@ -64,5 +76,9 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+if (process.env.NODE_ENV === "development") {
+  delete mongoose.models.User;
+}
+
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 export default User;

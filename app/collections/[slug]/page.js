@@ -40,9 +40,7 @@ export default function CollectionDetail() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {items.map((p) => (
-          <Link key={p.id} href={`/products/${p.id}`}>
-            <ProductCard product={p} />
-          </Link>
+            <ProductCard key={p.id} product={p} />
         ))}
       </div>
     </PageShell>

@@ -116,7 +116,7 @@
 - **Status:** Initial integration.
 - **Dependencies:** `app/account/layout.js`, `NavLink`.
 - **Entry points:** Header account link and account subnavigation.
-- **Routes involved:** `/account`, `/account/profile`, `/account/addresses`, `/account/security`, `/account/orders`, `/account/notifications`
+- **Routes involved:** `/account`, `/account/addresses`, `/account/security`, `/account/orders`, `/account/notifications`
 - **Components involved:** `SiteHeader`, `SiteFooter`, `NavLink`
 - **API usage:** NextAuth session usage.
 - **Database usage:** Fetch user information via NextAuth session.
