@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Fix Vercel Install Failure: nodemailer Peer Conflict)
+
+**Summary:** Vercel's fresh `npm install` failed with `ERESOLVE` because `next-auth@5.0.0-beta.32` (via `@auth/core@0.41.3`) declares a peer dependency on `nodemailer@^7.0.7 || ^8.0.5`, while the project pinned `nodemailer@^9.0.3`. The conflict did not appear locally because the existing `node_modules`/lockfile already contained 9.0.3. Downgraded `nodemailer` to `^8.0.5` and regenerated `package-lock.json` (resolves to 8.0.11). `lib/mailer.js` only uses `createTransport({ service: "gmail" })`, whose API is unchanged in v8, so no code change was needed. Verified with `npm ci --dry-run` against the lockfile (no ERESOLVE), a full `next build`, lint, and a direct `createTransport` smoke test.
+
+**Affected files:** `package.json`, `package-lock.json`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-14 (Fix Broken Product Image References)
 
 **Summary:** Pre-deploy verification found three product image references in `data/product.js` pointing at files that do not exist in `public/` (`ramen-cat-t-shirt/2.webp`, `ramen-cat-t-shirt/3.webp`, `shadow-shinobi-hoodie/2.webp`). These would have rendered as broken images on the product detail page in production. Both products now reference only `1.webp`, matching every other product in the catalog. Since `lib/seed/product.js` seeds MongoDB from the same `data/product.js`, re-seeding the production database will use the corrected catalog. A production `next start` runtime check confirmed the middleware (bcrypt on Node runtime), DB-backed search, static assets, and NextAuth endpoints all work; the only failure mode found was local-only (`UntrustedHost` on `next start` without `AUTH_TRUST_HOST`, which Vercel sets automatically).
