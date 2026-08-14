@@ -231,8 +231,22 @@ export function SiteHeader() {
       ) : null}
 
       {/* Mobile menu drawer */}
-      {open ? (
-        <div className="fixed inset-0 z-50 bg-background p-6 md:hidden">
+      <div
+        className={`fixed inset-0 z-50 md:hidden ${open ? "pointer-events-auto" : "pointer-events-none"}`}
+        inert={!open}
+        aria-hidden={!open}
+      >
+        <div
+          className="absolute inset-0"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+
+        <aside
+          role="dialog"
+          aria-label="Menu"
+          className={`absolute inset-y-0 left-0 flex w-[85%] max-w-sm flex-col border-r border-border bg-card p-6 shadow-2xl transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}
+        >
           <div className="mb-8 flex items-center justify-between">
             <span className="font-display text-lg font-bold">Menu</span>
             <button
@@ -270,8 +284,8 @@ export function SiteHeader() {
               <User size={18} /> Account
             </Link>
           </nav>
-        </div>
-      ) : null}
+        </aside>
+      </div>
     </header>
   );
 }

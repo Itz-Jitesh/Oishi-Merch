@@ -192,7 +192,7 @@ function CategoryCarousel() {
         {CATEGORIES.map((c) => (
           <Link
             key={c.name}
-            href="/"
+            href={`/categories/${c.name}`}
             className="group relative aspect-[4/5] w-[75%] shrink-0 snap-start overflow-hidden rounded-2xl sm:w-[50%] md:w-[32%] lg:w-[28%]"
             style={{ boxShadow: "var(--shadow-soft)" }}
           >

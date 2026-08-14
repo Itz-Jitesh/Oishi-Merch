@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-08-15 (Redesign Mobile Menu Drawer)
+
+**Summary:** The mobile hamburger menu previously opened as a full-screen, full-width transparent panel. It is now a solid `bg-card` drawer that slides in from the left edge via a `translate-x` transition, pinned with `fixed`/`inset-y-0` so it stays put while scrolling and takes the full vertical height. It spans only `w-[85%] max-w-sm` horizontally, leaving a strip of the page visible behind it; tapping that exposed strip closes the drawer. The wrapper is always mounted (for the slide-in/out animation) with `pointer-events-none` when closed and `inert` + `aria-hidden` to keep it out of the focus/a11y tree when closed.
+
+**Affected files:** `components/SiteHeader.jsx`, `CHANGELOG.md`
+
+**Related decision:** None.
+
+## 2026-08-15 (Make Home Page Category Cards Clickable)
+
+**Summary:** The "Shop by category" cards on the home page all linked to `href="/"`, so clicking them did nothing. Each card now links to the existing category detail route `/categories/${c.name}` — the same pattern already used by the `/categories` index page and served by `app/categories/[slug]/page.js` (where the slug is the category name, e.g. `/categories/T-Shirts`). Verified in a production `next start` that `/categories/T-Shirts`, `/categories/Hoodies`, and `/categories` all return 200.
+
+**Affected files:** `app/page.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
+## 2026-08-15 (Fix Auth Redirects Pointing at localhost in Production)
+
+**Summary:** On Vercel, unauthenticated users hitting protected routes were redirected to `http://localhost:3000/auth/login` instead of the deployment URL because the `NEXTAUTH_URL` env var (copied from the local `.env`) was still `localhost:3000`. The old middleware used NextAuth's `auth((req) => ...)` withAuth wrapper, which short-circuits unauthenticated requests by redirecting to the sign-in page built from NextAuth's env-derived base URL — ignoring the actual request host. Replaced it with `getToken` from `next-auth/jwt`, which decodes the session JWE cookie directly (no HTTP session fetch, no host-trust check, no `NEXTAUTH_URL` dependency), and redirects using `req.url` (the real incoming host). Verified in production `next start` with the stale `NEXTAUTH_URL=localhost:3000` still set: all protected routes now 307 to `http://<real-host>/auth/login`; a real NextAuth-encoded session cookie in `authjs.session-token` is let through (200), while no/invalid cookies are redirected. Note: Google OAuth callback URLs and other NextAuth-internal URLs still derive from the base URL, so `NEXTAUTH_URL` must still be removed or set to the production URL in Vercel's environment settings.
+
+**Affected files:** `proxy.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Fix Vercel Install Failure: nodemailer Peer Conflict)
 
 **Summary:** Vercel's fresh `npm install` failed with `ERESOLVE` because `next-auth@5.0.0-beta.32` (via `@auth/core@0.41.3`) declares a peer dependency on `nodemailer@^7.0.7 || ^8.0.5`, while the project pinned `nodemailer@^9.0.3`. The conflict did not appear locally because the existing `node_modules`/lockfile already contained 9.0.3. Downgraded `nodemailer` to `^8.0.5` and regenerated `package-lock.json` (resolves to 8.0.11). `lib/mailer.js` only uses `createTransport({ service: "gmail" })`, whose API is unchanged in v8, so no code change was needed. Verified with `npm ci --dry-run` against the lockfile (no ERESOLVE), a full `next build`, lint, and a direct `createTransport` smoke test.
