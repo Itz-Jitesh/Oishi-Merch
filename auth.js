@@ -5,7 +5,24 @@ import User from "@/models/users";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
+const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+
+if (!authSecret) {
+    console.error(
+        "[auth] FATAL: AUTH_SECRET / NEXTAUTH_SECRET is NOT set. " +
+            "Session cookies cannot be created, so no login will persist. " +
+            "Set it in Vercel → Settings → Environment Variables, then redeploy."
+    );
+} else if (authSecret.length < 32) {
+    console.error(
+        "[auth] FATAL: AUTH_SECRET is only " + authSecret.length + " characters. " +
+            "NextAuth v5 cannot encrypt session JWTs with a secret shorter than 32 chars. " +
+            "Generate a strong one with: openssl rand -base64 32"
+    );
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    secret: authSecret,
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,

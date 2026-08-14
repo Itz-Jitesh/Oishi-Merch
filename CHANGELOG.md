@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Explicit AUTH_SECRET wiring + loud init-time diagnostics)
+
+**Summary:** Google OAuth now completes on production but no session cookie is created afterward — the failure is in session-JWT creation, which is the only login step that depends on `AUTH_SECRET`/`NEXTAUTH_SECRET` (the Google round-trip and DB writes don't). `auth.js` now resolves `AUTH_SECRET ?? NEXTAUTH_SECRET` explicitly at module load, passes it as `secret` to `NextAuth(...)`, and logs a loud `[auth] FATAL:` message if the secret is missing or shorter than 32 characters (NextAuth v5 cannot encrypt session JWEs with a short secret). If `MissingSecret` or the FATAL warning appears in Vercel Runtime Logs after the next deploy, the fix is purely environment: set `AUTH_SECRET` (or `NEXTAUTH_SECRET`) on Vercel and redeploy. Re-verified locally: credentials login still creates the `authjs.session-token` cookie and the warnings are absent with the local 44-char secret.
+
+**Affected files:** `auth.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Diagnostics + Email Normalization for Credentials Login)
 
 **Summary:** Credentials login worked locally but failed on Vercel (no session cookie created) while signup and OTP flows worked — signup/OTP never touch the NextAuth session secret, login does. The code itself was verified working end-to-end locally (cookie created, session readable, protected routes pass). To pinpoint the production-only failure, `authorize` in `auth.js` now logs each step with `[auth][authorize]` markers (connectDB failure, user lookup found/not-found, password present, bcrypt match result, thrown errors). Also fixed a latent bug: `authorize` now trims and lowercases the submitted email before the lookup, matching the schema's `lowercase: true` storage, so logging in with a different case no longer fails to find the user (verified: `OISHI_TEST@EXAMPLE.COM` now logs in successfully).
