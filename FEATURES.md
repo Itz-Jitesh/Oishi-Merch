@@ -1,6 +1,6 @@
 # Features
 
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-14
 
 ## Storefront Home
 
@@ -9,7 +9,7 @@
 - **Dependencies:** `SiteHeader`, `SiteFooter`, local arrays, lucide-react icons.
 - **Entry points:** `/`
 - **Routes involved:** `/`
-- **Components involved:** `HeroLoop`, `ProductCarousel`, `SiteHeader`, `SiteFooter`
+- **Components involved:** `HeroLoop`, `ProductCarousel`, `StudioVideo`, `SiteHeader`, `SiteFooter`
 - **API usage:** None.
 - **Database usage:** None currently (planned to use Mongoose).
 - **Known future improvements:** Use the canonical product data source from MongoDB, replace hardcoded hero/category/product content with managed content.
@@ -52,27 +52,27 @@
 
 ## Search And Filtering
 
-- **Purpose:** Lets users search products by name and filter by category, price, and sort order.
-- **Status:** Complete as client-side local search.
-- **Dependencies:** `useSearchParams`, `useState`, `lib/products.js`
-- **Entry points:** Header search redirects to `/search?q=...`; direct URL params are read on `/search`.
+- **Purpose:** Lets users search products by keyword and semantic relevance, and filter by category, price, and sort order. The header search input provides typeahead suggestions.
+- **Status:** Complete as backend-backed hybrid search (keyword + semantic via NVIDIA embeddings).
+- **Dependencies:** `useSearchParams`, `useState`, `useEffect`, `/api/search`, `/api/search/autocomplete`, MongoDB `Product` model.
+- **Entry points:** Header search redirects to `/search?q=...`; typeahead suggestions navigate directly to product pages; direct URL params are read on `/search`.
 - **Routes involved:** `/search`
 - **Components involved:** `ProductCard`, `SiteHeader`, `SiteFooter`
-- **API usage:** None.
-- **Database usage:** None.
-- **Known future improvements:** Add server-backed search querying MongoDB, pagination, and vector search leveraging `embedding` array in Product model.
+- **API usage:** `GET /api/search/autocomplete?q=...` for the header typeahead; `GET /api/search?q=&category=&maxPrice=&sort=` for the results page.
+- **Database usage:** Queries the Mongoose `Product` model; ranking uses the stored `embedding` arrays at request time.
+- **Known future improvements:** MongoDB-native vector search once vector-index support in the deployment is verified; incremental re-embedding when admin product CRUD becomes the canonical catalog workflow.
 
 ## Wishlist
 
-- **Purpose:** Displays saved product-style items.
-- **Status:** Static local-data UI.
-- **Dependencies:** `lib/products.js`
+- **Purpose:** Displays the logged-in user's saved products, persisted per user in MongoDB.
+- **Status:** Backend-backed; persisted per user via the `User.wishlist` slug array.
+- **Dependencies:** `PageShell`, `ProductCard`, `/api/wishlist`, MongoDB `User` model, NextAuth session.
 - **Entry points:** Header wishlist link.
 - **Routes involved:** `/wishlist`
 - **Components involved:** `PageShell`, `ProductCard`
-- **API usage:** None.
-- **Database usage:** None.
-- **Known future improvements:** Persist wishlist per user in the database and connect product detail wishlist actions.
+- **API usage:** `GET /api/wishlist` on mount (401 redirects to `/auth/login`); `POST /api/wishlist/toggle` from the `ProductCard` heart button. `ProductCard` also fetches `GET /api/wishlist` on mount to initialize the heart's filled/outline state.
+- **Database usage:** Reads the `wishlist` slug array from the authenticated user's MongoDB document.
+- **Known future improvements:** Wishlist count badge in header; sync the static heart button on `/products/[slug]` with the toggle API.
 
 ## Cart
 
@@ -88,14 +88,14 @@
 
 ## Checkout
 
-- **Purpose:** Shows contact, shipping, payment, and order-summary form UI.
-- **Status:** UI-only; submit prevents default and does not create orders or payments.
-- **Dependencies:** `PageShell`, shadcn-style `Input` and `Button`
+- **Purpose:** Shows contact, shipping, payment, and order-summary form UI. Authenticated users can pick a saved address or enter one manually and optionally save it to their account.
+- **Status:** UI with manual address entry; authenticated users get a saved-address selector and save-to-account convenience (payment still flows through Razorpay as before).
+- **Dependencies:** `PageShell`, shadcn-style `Input` and `Button`, `/api/account/addresses/fetch`, `/api/account/addresses/save`, `/api/payment/*`.
 - **Entry points:** `/checkout`, `/checkout/success`
 - **Routes involved:** `/checkout`, `/checkout/success`
 - **Components involved:** `PageShell`
-- **API usage:** None.
-- **Database usage:** None.
+- **API usage:** `GET /api/account/addresses/fetch` on mount to detect auth and load saved addresses; `POST /api/account/addresses/save` (best-effort) when "Save this address to my account" is checked; existing `/api/payment/create-order`, `/api/payment/verify`, `/api/payment/success` flow. A selected saved address is mapped into the same `{ fullName, phone, street, city, postalCode }` shippingAddress shape the manual form sends.
+- **Database usage:** Reads/writes the authenticated user's `addresses` subdocuments; orders are created by `/api/payment/success`.
 - **Known future improvements:** Add validation, payment provider integration, order creation, and server-side security controls.
 
 ## Orders

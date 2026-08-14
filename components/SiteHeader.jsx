@@ -14,11 +14,51 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const handleSearchSubmit = (e) => {
+    if (e.key === "Escape") {
+      setSuggestionsOpen(false);
+      return;
+    }
     if (e.key === "Enter" && searchQuery.trim()) {
       window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
     }
   };
+
+  useEffect(() => {
+    const value = searchQuery.trim();
+
+    if (value.length < 2) {
+      setSuggestions([]);
+      setSuggestionsOpen(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/search/autocomplete?q=${encodeURIComponent(value)}`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        setSuggestions((data.results || []).slice(0, 8));
+        setSuggestionsOpen(true);
+      } catch {
+        if (!cancelled) {
+          setSuggestions([]);
+          setSuggestionsOpen(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
 
   
 
@@ -63,7 +103,14 @@ export function SiteHeader() {
 
         {/* Search bar */}
         <div className="ml-auto hidden flex-1 max-w-sm md:block">
-          <div className="relative">
+          <div
+            className="relative"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) {
+                setSuggestionsOpen(false);
+              }
+            }}
+          >
             <Search
               size={16}
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -76,6 +123,26 @@ export function SiteHeader() {
               onKeyDown={handleSearchSubmit}
               className="h-10 w-full rounded-xl border border-input bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
+            {suggestionsOpen && suggestions.length > 0 ? (
+              <div
+                aria-label="Search suggestions"
+                className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-lg"
+              >
+                {suggestions.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/products/${s.slug}`}
+                    onClick={() => setSuggestionsOpen(false)}
+                    className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-secondary"
+                  >
+                    <span className="truncate text-foreground">{s.name}</span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {s.category}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
-import { PRODUCTS, CATEGORIES } from "@/data/product";
+import { CATEGORIES } from "@/data/product";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -22,18 +22,39 @@ function SearchContent() {
   const [selected, setSelected] = useState(initialCategory ? [initialCategory] : []);
   const [price, setPrice] = useState(150);
   const [sort, setSort] = useState(initialSort);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const toggle = (c) =>
     setSelected((s) => (s.includes(c) ? s.filter((x) => x !== c) : [...s, c]));
 
-  let results = PRODUCTS.filter(
-    (p) =>
-      (selected.length === 0 || selected.includes(p.category)) &&
-      p.price <= price &&
-      p.name.toLowerCase().includes(query.toLowerCase()),
-  );
-  if (sort === "price-asc") results = [...results].sort((a, b) => a.price - b.price);
-  if (sort === "price-desc") results = [...results].sort((a, b) => b.price - a.price);
+  useEffect(() => {
+    let cancelled = false;
+
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (selected.length > 0) params.set("category", selected.join(","));
+    if (price) params.set("maxPrice", String(price));
+    if (sort) params.set("sort", sort);
+
+    setLoading(true);
+    fetch(`/api/search?${params.toString()}`)
+      .then((res) => (res.ok ? res.json() : { results: [] }))
+      .then((data) => {
+        if (cancelled) return;
+        setResults(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setResults([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query, selected, price, sort]);
 
   const activeFilters = [
     collection && `Collection: ${collection}`,
@@ -112,13 +133,16 @@ function SearchContent() {
           </aside>
 
           <section className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {results.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-            {results.length === 0 && (
+            {loading ? (
+              <p className="col-span-full py-12 text-center text-muted-foreground">
+                Loading products…
+              </p>
+            ) : results.length === 0 ? (
               <p className="col-span-full py-12 text-center text-muted-foreground">
                 No products match your filters.
               </p>
+            ) : (
+              results.map((p) => <ProductCard key={p.id} product={p} />)
             )}
           </section>
 

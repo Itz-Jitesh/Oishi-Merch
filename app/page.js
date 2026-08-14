@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Instagram, Star } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Instagram, Pause, Play, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -38,8 +38,8 @@ function HeroLoop() {
                 {s.sub}
               </p>
               <div className="mt-6">
-                <Button className="rounded-xl bg-background text-foreground hover:bg-background/90">
-                  {s.cta}
+                <Button asChild className="rounded-xl bg-background text-foreground hover:bg-background/90">
+                  <Link href="/products">{s.cta}</Link>
                 </Button>
               </div>
             </div>
@@ -110,23 +110,27 @@ function ProductCarousel() {
             className="group w-[70%] shrink-0 snap-start overflow-hidden rounded-2xl bg-card sm:w-[45%] md:w-[28%] lg:w-[23%]"
             style={{ boxShadow: "var(--shadow-soft)" }}
           >
-            <div className="relative aspect-square overflow-hidden bg-secondary/40">
-              <img
-                src={p.image}
-                alt={p.name}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-              {p.tag ? (
-                <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
-                  {p.tag}
-                </span>
-              ) : null}
-            </div>
-            <div className="flex items-center justify-between p-4">
-              <div>
-                <h3 className="text-sm font-semibold text-foreground">{p.name}</h3>
-                <p className="text-sm text-muted-foreground">{p.price}</p>
+            <Link href={`/products/${p.slug}`} className="block">
+              <div className="relative aspect-square overflow-hidden bg-secondary/40">
+                {p.images?.[0] ? (
+                  <img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                ) : null}
+                {p.tag ? (
+                  <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
+                    {p.tag}
+                  </span>
+                ) : null}
               </div>
+            </Link>
+            <div className="flex items-center justify-between p-4">
+              <Link href={`/products/${p.slug}`} className="min-w-0">
+                <h3 className="truncate text-sm font-semibold text-foreground">{p.name}</h3>
+                <p className="text-sm text-muted-foreground">₹{p.price}</p>
+              </Link>
               <button className="rounded-xl bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-primary hover:text-primary-foreground">
                 Add
               </button>
@@ -216,6 +220,97 @@ function CategoryCarousel() {
   );
 }
 
+function StudioVideo() {
+  const videoRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const hideTimer = useRef(null);
+
+  const showControls = useCallback(() => {
+    setControlsVisible(true);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setControlsVisible(false), 3000);
+  }, []);
+
+  useEffect(() => {
+    showControls();
+    return () => {
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+    };
+  }, [showControls]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPause);
+
+    return () => {
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPause);
+    };
+  }, []);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      video.play().catch(() => {});
+      showControls();
+    } else {
+      video.pause();
+    }
+  };
+
+  const show = controlsVisible || !playing;
+
+  return (
+    <section className="mx-auto max-w-7xl px-5 pb-14">
+      <div
+        className="relative aspect-[16/8] overflow-hidden rounded-3xl md:aspect-[16/7]"
+        style={{ boxShadow: "var(--shadow-card)" }}
+        onMouseEnter={showControls}
+        onMouseLeave={() => {
+          if (hideTimer.current) clearTimeout(hideTimer.current);
+          setControlsVisible(false);
+        }}
+      >
+        <video
+          ref={videoRef}
+          src="/video/Video.mp4"
+          className="h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          controls={false}
+          disablePictureInPicture
+          aria-label="Inside the studio"
+        />
+
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={playing ? "Pause video" : "Play video"}
+          className={`absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-background/70 text-foreground backdrop-blur transition-opacity duration-300 hover:bg-background ${show ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        >
+          {playing ? (
+            <Pause size={24} fill="currentColor" />
+          ) : (
+            <Play size={24} fill="currentColor" />
+          )}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
@@ -228,30 +323,7 @@ export default function HomePage() {
       <ProductCarousel />
 
       {/* Video loop */}
-      <section className="mx-auto max-w-7xl px-5 pb-14">
-        <div
-          className="relative h-[360px] overflow-hidden rounded-3xl md:h-[480px]"
-          style={{ boxShadow: "var(--shadow-card)" }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&w=2000&q=80"
-            alt="Inside the studio"
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-foreground/40" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-background">
-            <span className="mb-4 grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground">
-              ▶
-            </span>
-            <h2 className="font-display text-3xl font-bold md:text-5xl">
-              Inside the studio
-            </h2>
-            <p className="mt-2 max-w-md px-6 text-sm text-background/80">
-              Watch how each drop comes together — from sketch to stitched.
-            </p>
-          </div>
-        </div>
-      </section>
+      <StudioVideo />
 
       {/* Reviews */}
       <section className="bg-secondary/40 py-16">

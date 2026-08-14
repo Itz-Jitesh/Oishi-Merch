@@ -15,12 +15,16 @@ The project is currently transitioning from a static/client-side UI prototype to
 - **Database Connection**: MongoDB connection caching and models for User and Product established.
 - **Security Page**: Conditional UI rendering for Google OAuth accounts (showing Google auth status card) vs email/password accounts (showing password change form), enforced at both client and API route levels.
 - **Order History**: Dynamic client-side order history retrieval under `/account/orders` page using `useEffect` calling a separate `/api/account/orders` API.
+- **Hybrid Search**: Server-backed hybrid product search (keyword + semantic) using NVIDIA embeddings. Embeddings are generated for products only, at seed time, and stored in the existing `Product.embedding` field. Public `/api/search` and `/api/search/autocomplete` endpoints, a header typeahead dropdown, and an API-backed `/search` results page.
+- **Wishlist Persistence**: Per-user wishlist stored as a slug array on the MongoDB `User` document. `GET /api/wishlist` returns resolved catalog items, `POST /api/wishlist/toggle` adds/removes a slug (and keeps `wishlistCount` in sync), the `ProductCard` heart button toggles wishlist state, and `/wishlist` renders the user's saved items with an empty state.
+- **Checkout Saved Addresses**: `/checkout` detects the logged-in user, lets them select a saved address (fetched from `/api/account/addresses/fetch`) or enter one manually, and offers a "Save this address to my account" checkbox that best-effort POSTs to `/api/account/addresses/save`. Selected saved addresses are mapped into the same `{ fullName, phone, street, city, postalCode }` shippingAddress shape the manual form sends.
 
 ## In Progress
 
 - Connecting static/mocked pages (like product catalogs and carts) to the actual MongoDB data via Mongoose.
 - Integrating authentication sessions into the UI, restricting admin routes and tying user accounts to orders.
 - Moving from client-side state models for things like Cart to backend/database persistence.
+- Populating the new NVIDIA embedding env vars (`.env` placeholders added) and re-seeding products so semantic search returns ranked results.
 
 ## Blocked Work
 
@@ -36,7 +40,7 @@ None known at this time.
 ## Current Status by Domain
 
 ### Backend Status
-The MongoDB connection is robust and schemas are defined for core entities (User, Product). The NextAuth backend has been configured to support Credentials (with bcrypt) and Google OAuth. Some core API routes are scaffolded under `app/api/auth/`.
+The MongoDB connection is robust and schemas are defined for core entities (User, Product). The NextAuth backend has been configured to support Credentials (with bcrypt) and Google OAuth. Public search API routes exist under `app/api/search/` and serve hybrid keyword + semantic results using stored product embeddings. Some core API routes are scaffolded under `app/api/auth/`.
 
 ### Frontend Status
 Frontend is primarily built and structured as Server Components by default where applicable, with client-side interactivity where needed. Many pages currently rely on mock data in `lib/products.js` or inline arrays.
@@ -52,6 +56,8 @@ No automated tests are currently implemented.
 
 ### Current Known Issues
 - UI still relies heavily on mock data, leading to a disconnect between the Database and the Frontend representation in some areas.
+- `/search` and the header typeahead now read from the MongoDB `Product` collection, while most other storefront pages (product catalog, home, collections) still use local arrays from `data/product.js`; catalog edits require a re-seed to be reflected in search. The wishlist resolves product slugs against the same local `data/product.js` catalog for consistency with `/products/[slug]`.
+- Semantic search requires `NVIDIA_API_KEY`, `NVIDIA_EMBEDDING_MODEL`, and `NVIDIA_EMBEDDING_URL` (currently empty placeholders) and a successful seed with embeddings.
 
 ### Technical Debt
 - Discrepancy between implemented backend models (`models/product.js`) and frontend consumption (still using `lib/products.js` mocked data).

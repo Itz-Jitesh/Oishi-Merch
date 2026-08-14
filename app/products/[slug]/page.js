@@ -39,10 +39,14 @@ export default function ProductDetail() {
   const product = PRODUCTS.find((p) => p.slug === slug);
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
 
   if (!product) {
     return <ProductMissing />;
   }
+
+  const images = Array.isArray(product.images) && product.images.length > 0 ? product.images : [];
+  const mainImage = images[Math.min(activeImage, Math.max(images.length - 1, 0))];
 
   const related = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
 
@@ -80,10 +84,34 @@ export default function ProductDetail() {
         </nav>
 
         <div className="grid gap-10 lg:grid-cols-2">
-          <div
-            className="aspect-square w-full rounded-3xl shadow-[var(--shadow-card)]"
-            style={{ background: `linear-gradient(135deg, ${product.color}, var(--background))` }}
-          />
+          <div className="space-y-4">
+            <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-secondary shadow-[var(--shadow-card)]">
+              {mainImage ? (
+                <img
+                  src={mainImage}
+                  alt={product.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : null}
+            </div>
+            {images.length > 1 ? (
+              <div className="flex gap-3">
+                {images.map((img, i) => (
+                  <button
+                    key={img}
+                    onClick={() => setActiveImage(i)}
+                    aria-label={`View image ${i + 1}`}
+                    className={`h-20 w-20 overflow-hidden rounded-xl border-2 transition ${activeImage === i
+                      ? "border-primary"
+                      : "border-transparent hover:border-border"
+                      }`}
+                  >
+                    <img src={img} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
           <section>
             <span className="text-xs uppercase tracking-widest text-muted-foreground">
               {product.category}

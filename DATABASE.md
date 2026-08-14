@@ -1,6 +1,6 @@
 # Database
 
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-14
 
 The application currently uses MongoDB for persistence, with Mongoose as the Object Data Modeling (ODM) library.
 
@@ -19,6 +19,10 @@ The application currently uses MongoDB for persistence, with Mongoose as the Obj
 - `role`: String enum (`user`, `admin`), default `user`
 - `emailVerified`: Boolean
 - `image`: String (avatar URL)
+- `wishlistCount`: Number, default 0, min 0 (kept in sync with `wishlist` by `/api/wishlist/toggle`)
+- `wishlist`: Array of Strings (product slugs), default `[]`
+- `loyaltyPoints`: Number, default 0, min 0
+- `addresses`: Array of address subdocuments (`name`, `phone`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `country`, `isDefault`)
 - `otp`: String, for email verification/password reset
 - `otpExpiry`: Date
 - `provider`: String enum (`credentials`, `google`), default `credentials`

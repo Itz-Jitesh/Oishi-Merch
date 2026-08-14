@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Lock, ShieldCheck } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,11 @@ function Field({ label, ...rest }) {
 export default function CheckoutPage() {
 
   const [items, setItems] = useState([]);
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [addressMode, setAddressMode] = useState("manual");
+  const [isAuthed, setIsAuthed] = useState(false);
+  const [saveToAccount, setSaveToAccount] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -55,18 +61,99 @@ export default function CheckoutPage() {
     fetchCart();
   }, []);
 
+  useEffect(() => {
+    const fetchSavedAddresses = async () => {
+      try {
+        const response = await fetch("/api/account/addresses/fetch");
+
+        if (response.status === 401) {
+          setIsAuthed(false);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch saved addresses");
+        }
+
+        const data = await response.json();
+        setIsAuthed(true);
+        setSavedAddresses(data.addresses || []);
+
+        const defaultAddress =
+          (data.addresses || []).find((a) => a.isDefault) ||
+          (data.addresses || [])[0];
+
+        if (defaultAddress) {
+          setSelectedAddressId(defaultAddress._id);
+        }
+      } catch (error) {
+        setIsAuthed(false);
+      }
+    };
+
+    fetchSavedAddresses();
+  }, []);
+
+  const switchToSavedMode = () => {
+    setAddressMode("saved");
+    if (!selectedAddressId && savedAddresses.length > 0) {
+      setSelectedAddressId(savedAddresses[0]._id);
+    }
+  };
+
+  const saveAddressToAccount = async (shippingAddress, state) => {
+    try {
+      await fetch("/api/account/addresses/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: shippingAddress.fullName,
+          phone: shippingAddress.phone,
+          addressLine1: shippingAddress.street,
+          addressLine2: "",
+          city: shippingAddress.city,
+          state: state || "",
+          postalCode: shippingAddress.postalCode,
+          isDefault: false,
+        }),
+      });
+    } catch (error) {
+      // Best-effort convenience — never blocks payment.
+    }
+  };
+
   const handleProceedToPayment = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
-    const shippingAddress = {
-      fullName: formData.get("fullName"),
-      phone: formData.get("phone"),
-      street: formData.get("street"),
-      city: formData.get("city"),
-      postalCode: formData.get("postalCode"),
-    };
+    let shippingAddress;
+
+    if (addressMode === "saved" && selectedAddressId) {
+      const saved = savedAddresses.find((a) => a._id === selectedAddressId);
+
+      shippingAddress = {
+        fullName: saved.name,
+        phone: saved.phone,
+        street: [saved.addressLine1, saved.addressLine2].filter(Boolean).join(", "),
+        city: saved.city,
+        postalCode: saved.postalCode,
+      };
+    } else {
+      shippingAddress = {
+        fullName: formData.get("fullName"),
+        phone: formData.get("phone"),
+        street: formData.get("street"),
+        city: formData.get("city"),
+        postalCode: formData.get("postalCode"),
+      };
+
+      if (saveToAccount) {
+        saveAddressToAccount(shippingAddress, formData.get("state"));
+      }
+    }
 
     try {
       const response = await fetch("/api/payment/create-order", {
@@ -172,19 +259,112 @@ export default function CheckoutPage() {
           <form onSubmit={handleProceedToPayment} className="space-y-6">
             <section className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
               <h2 className="font-display text-xl text-foreground">Shipping address</h2>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Saved addresses aren't available yet — please enter your details for this order.
-              </p>
-              <div className="my-5 border-t border-border" />
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Full name" name="fullName" placeholder="Ada Lovelace" autoComplete="name" required />
-                <Field label="Phone" name="phone" placeholder="+91 98765 43210" autoComplete="tel" required />
-                <div className="md:col-span-2">
-                  <Field label="Street" name="street" placeholder="123 Sakura Ave, Apt 4B" autoComplete="street-address" required />
+
+              {isAuthed ? (
+                <div className="mt-4 flex gap-2 rounded-full border border-border p-1">
+                  <button
+                    type="button"
+                    onClick={() => setAddressMode("manual")}
+                    className={`rounded-full px-4 py-1.5 text-sm transition ${addressMode === "manual"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    Add address manually
+                  </button>
+                  <button
+                    type="button"
+                    onClick={switchToSavedMode}
+                    className={`rounded-full px-4 py-1.5 text-sm transition ${addressMode === "saved"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    Select a saved address
+                  </button>
                 </div>
-                <Field label="City" name="city" placeholder="Kyoto" autoComplete="address-level2" required />
-                <Field label="Postal code" name="postalCode" placeholder="600-0000" autoComplete="postal-code" required />
-              </div>
+              ) : (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Enter your shipping details for this order.
+                </p>
+              )}
+
+              <div className="my-5 border-t border-border" />
+
+              {addressMode === "saved" && isAuthed ? (
+                savedAddresses.length === 0 ? (
+                  <div className="rounded-2xl border border-border bg-background p-8 text-center">
+                    <p className="text-muted-foreground">
+                      You don't have any saved addresses yet.
+                    </p>
+                    <Link
+                      href="/account/addresses"
+                      className="mt-4 inline-block rounded-full bg-primary px-5 py-2 text-sm text-primary-foreground"
+                    >
+                      Add an address
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {savedAddresses.map((a) => (
+                      <label
+                        key={a._id}
+                        className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition ${selectedAddressId === a._id
+                          ? "border-primary"
+                          : "border-border hover:border-primary/50"
+                          }`}
+                      >
+                        <input
+                          type="radio"
+                          name="savedAddress"
+                          value={a._id}
+                          checked={selectedAddressId === a._id}
+                          onChange={() => setSelectedAddressId(a._id)}
+                          className="mt-1 h-4 w-4 accent-[var(--primary)]"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-medium">
+                            {a.name}{" "}
+                            {a.isDefault && (
+                              <span className="ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                                Default
+                              </span>
+                            )}
+                          </p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {a.addressLine1}
+                            {a.addressLine2 ? `, ${a.addressLine2}` : ""}, {a.city}, {a.state} {a.postalCode}
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">{a.phone}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label="Full name" name="fullName" placeholder="Ada Lovelace" autoComplete="name" required />
+                  <Field label="Phone" name="phone" placeholder="+91 98765 43210" autoComplete="tel" required />
+                  <div className="md:col-span-2">
+                    <Field label="Street" name="street" placeholder="123 Sakura Ave, Apt 4B" autoComplete="street-address" required />
+                  </div>
+                  <Field label="City" name="city" placeholder="Kyoto" autoComplete="address-level2" required />
+                  <Field label="State" name="state" placeholder="Kyoto (optional)" autoComplete="address-level1" />
+                  <Field label="Postal code" name="postalCode" placeholder="600-0000" autoComplete="postal-code" required />
+                </div>
+              )}
+
+              {isAuthed && addressMode === "manual" && (
+                <label className="mt-4 flex items-center gap-2 text-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-[var(--primary)]"
+                    checked={saveToAccount}
+                    onChange={(e) => setSaveToAccount(e.target.checked)}
+                  />
+                  Save this address to my account
+                </label>
+              )}
 
               <Button type="submit" className="mt-6 w-full rounded-full py-6 text-base">
                 Proceed to payment

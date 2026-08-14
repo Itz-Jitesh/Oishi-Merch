@@ -44,6 +44,11 @@ const UserSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+
+    wishlist: {
+      type: [String],
+      default: [],
+    },
     
     loyaltyPoints: {
       type: Number,
