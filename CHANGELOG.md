@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-08-14 (Vector Search Planning Details)
+
+**Summary:** Added a verified planning reference for the upcoming vector search feature, documenting the current stack, structure, state management, auth, search implementation, product embedding fields, data volume, conventions, and open implementation decisions.
+
+**Affected files:** `VECTOR_SEARCH_FEATURE_DETAILS.md`
+
+**Related decision:** None.
+
+## 2026-08-14 (Order History Integration)
+
+**Summary:** Created API route `/api/account/orders` and integrated the customer `/account/orders` page to fetch order details (items, prices, dates, totals, shipping addresses) from MongoDB via `useEffect` and render them in a custom card layout.
+
+**Affected files:** `app/api/account/orders/route.js`, `app/account/orders/page.js`, `API.md`, `FEATURES.md`, `PROJECT_STATE.md`
+
+**Related decision:** None.
+
 ## 2026-08-14
 
 **Summary:** Updated `/account/security` page and `/api/account/security` API route to restrict password changes for Google OAuth authenticated users while displaying the password change form for email/password authenticated users.
@@ -42,4 +58,3 @@
 ## 2026-08-12
 **Summary:** Rebuilt order success page for Next.js App Router format, fixed AccountPage async client component runtime error, fixed User model schema caching and Google OAuth creation to persist loyaltyPoints, ordersCount, and wishlistCount, and removed stale Profile navigation item from Account layout sidebar.
 **Affected files:** `app/checkout/success/page.js`, `app/checkout/success/OrderSuccessClient.jsx`, `app/account/page.js`, `models/users.js`, `auth.js`, `app/api/auth/signup/route.js`, `app/api/account/overview/route.js`, `app/account/layout.js`, `FEATURES.md`, `CLAUDE.md`
-

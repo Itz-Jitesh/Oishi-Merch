@@ -14,6 +14,7 @@ The project is currently transitioning from a static/client-side UI prototype to
 - **Authentication**: Backend setup with NextAuth, MongoDB integration, credential and Google OAuth strategies.
 - **Database Connection**: MongoDB connection caching and models for User and Product established.
 - **Security Page**: Conditional UI rendering for Google OAuth accounts (showing Google auth status card) vs email/password accounts (showing password change form), enforced at both client and API route levels.
+- **Order History**: Dynamic client-side order history retrieval under `/account/orders` page using `useEffect` calling a separate `/api/account/orders` API.
 
 ## In Progress
 

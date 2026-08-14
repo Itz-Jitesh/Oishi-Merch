@@ -101,14 +101,14 @@
 ## Orders
 
 - **Purpose:** Shows order history and order detail screens.
-- **Status:** Static/local-data UI.
-- **Dependencies:** Local hardcoded order arrays and `lib/products.js`
+- **Status:** Dynamic orders list under Account section; detail screens transitioning to backend.
+- **Dependencies:** `app/account/orders/page.js`, `app/api/account/orders/route.js`, MongoDB `Order` model, NextAuth session.
 - **Entry points:** `/orders`, account order links.
 - **Routes involved:** `/orders`, `/orders/[id]`, `/account/orders`
-- **Components involved:** `PageShell`
-- **API usage:** None.
-- **Database usage:** None.
-- **Known future improvements:** Persist orders in DB, authorize access via NextAuth, and fetch real order line items.
+- **Components involved:** `PageShell`, order card layouts.
+- **API usage:** Fetch user order history via `/api/account/orders`.
+- **Database usage:** Queries Mongoose `Order` model.
+- **Known future improvements:** Fetch individual order details on `/orders/[id]` from backend/database.
 
 ## Account
 

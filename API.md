@@ -41,10 +41,32 @@ The following authentication API endpoints exist under `app/api/auth/`:
 - **Path**: `/api/auth/resend`
 - **Description**: Resends verification OTP/email.
 
+## Account API Endpoints
+
+The following account API endpoints exist under `app/api/account/`:
+
+### `/overview`
+- **Method**: GET
+- **Path**: `/api/account/overview`
+- **Description**: Fetches user overview metrics (loyalty points, wishlist count, order count).
+- **Dependencies**: MongoDB (User and Order models).
+
+### `/security`
+- **Method**: POST
+- **Path**: `/api/account/security`
+- **Description**: Changes the password for email/password credentials-based accounts.
+- **Dependencies**: MongoDB (User model), bcrypt, NextAuth session.
+
+### `/orders`
+- **Method**: GET
+- **Path**: `/api/account/orders`
+- **Description**: Fetches the authenticated user's order history.
+- **Dependencies**: MongoDB (Order model), NextAuth session.
+
 ## Authentication Requirements
 
 APIs are partially authenticated. NextAuth manages sessions via JWT. Secure routes verify the session token.
 
 ## Current Data Access
 
-Most frontend components still import local JavaScript arrays from `lib/products.js`, but Authentication uses real API calls to the above endpoints, connected to MongoDB.
+Most frontend components still import local JavaScript arrays from `lib/products.js`, but Authentication and Account pages use real API calls to the above endpoints, connected to MongoDB.
