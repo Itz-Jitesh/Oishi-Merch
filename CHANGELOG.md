@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Second root cause: middleware could not read the `__Secure-` session cookie)
+
+**Summary:** After the env fix (NEXTAUTH_URL removed), login on Vercel correctly created `__Secure-authjs.session-token` (NextAuth v5 prefixes the cookie name with `__Secure-` on HTTPS; locally over HTTP it is the unprefixed `authjs.session-token`). But `proxy.js` (middleware) called `getToken()` without `secureCookie`, and `@auth/core`'s `getToken` defaults `secureCookie` to `false` — so the middleware looked for the unprefixed cookie name and used the unprefixed JWT salt, found nothing, and redirected even authenticated users away from protected routes ("not staying logged in"). Fixed by passing `secureCookie: process.env.VERCEL === "1" || req.url.startsWith("https://")` to `getToken`, so the middleware reads the same cookie name and salt that production writes. Verified against the real library code: a token minted with the `__Secure-` salt decodes with `secureCookie:true` and returns `null` with `secureCookie:false` (the bug). Local regression re-verified: credentials login → `/account` 200 with session, 307 without.
+
+**Affected files:** `proxy.js`, `CHANGELOG.md`, `PROJECT_STATE.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Root cause found: NEXTAUTH_URL=http://localhost:3000 in Vercel env)
 
 **Summary:** Production diagnostic (`GET /api/auth/diagnostic`) revealed the actual cause of the "login never persists" bug: the Vercel environment had `NEXTAUTH_URL` set to `http://localhost:3000`. The secret (`NEXTAUTH_SECRET`, 44 chars) was fine, DB connected, Google creds set. After any successful sign-in, NextAuth redirects the browser to `localhost:3000`, which cannot load in production — so login appears broken and no working session is seen. Fix (user action): delete `NEXTAUTH_URL` (and `AUTH_URL`) from Vercel Settings → Environment Variables and redeploy; Vercel derives the host automatically. The diagnostic endpoint now detects `localhost`/`127.0.0.1` in `NEXTAUTH_URL`/`AUTH_URL` and reports a `nextauthUrlPointsAtLocalhost` flag plus a verdict naming the fix. `auth.js` also logs a `[auth] FATAL:` message at module load when running on Vercel with a localhost auth URL. Verified locally by simulating the production env (VERCEL=1, VERCEL_ENV=production, NEXTAUTH_URL=http://localhost:3000): the diagnostic verdict and the auth.js FATAL both fire.
