@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-14 (Fix Broken Product Image References)
+
+**Summary:** Pre-deploy verification found three product image references in `data/product.js` pointing at files that do not exist in `public/` (`ramen-cat-t-shirt/2.webp`, `ramen-cat-t-shirt/3.webp`, `shadow-shinobi-hoodie/2.webp`). These would have rendered as broken images on the product detail page in production. Both products now reference only `1.webp`, matching every other product in the catalog. Since `lib/seed/product.js` seeds MongoDB from the same `data/product.js`, re-seeding the production database will use the corrected catalog. A production `next start` runtime check confirmed the middleware (bcrypt on Node runtime), DB-backed search, static assets, and NextAuth endpoints all work; the only failure mode found was local-only (`UntrustedHost` on `next start` without `AUTH_TRUST_HOST`, which Vercel sets automatically).
+
+**Affected files:** `data/product.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-14 (Mobile Usability Pass)
 
 **Summary:** Passed across the storefront to remove mobile overflow and improve touch ergonomics. Header icon buttons are now 44px tap targets (h-11 w-11 on mobile), the mobile header row shrinks to fit 320px screens, and the mobile search panel now shows the same typeahead autocomplete dropdown as desktop (blur/dismiss logic reused). Product cards and grids tighten to `gap-3` below `md` and the card title/price row no longer overflows; the wishlist heart is a 40px target. Product detail thumbnails scroll horizontally when they overflow, the qty/add-to-cart controls wrap, and the cart item rows shrink the media block to 80px on small phones (stepper + line price always fit). The search page sort control becomes full-width and a "Filters" toggle shows the filters panel on mobile (panel hidden below `lg` until opened). Checkout's address-mode toggle stacks into a two-row control on mobile. The account nav and admin nav keep 44px row targets; the admin layout gains a sticky mobile header with a native `<details>` menu that reveals the same nav links as the desktop sidebar. ESLint and `next build` both pass.
