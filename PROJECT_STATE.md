@@ -43,7 +43,7 @@ None known at this time.
 The MongoDB connection is robust and schemas are defined for core entities (User, Product). The NextAuth backend has been configured to support Credentials (with bcrypt) and Google OAuth. Public search API routes exist under `app/api/search/` and serve hybrid keyword + semantic results using stored product embeddings. Some core API routes are scaffolded under `app/api/auth/`.
 
 ### Frontend Status
-Frontend is primarily built and structured as Server Components by default where applicable, with client-side interactivity where needed. Many pages currently rely on mock data in `lib/products.js` or inline arrays.
+Frontend is primarily built and structured as Server Components by default where applicable, with client-side interactivity where needed. Many pages currently rely on mock data in `lib/products.js` or inline arrays. A mobile usability pass (2026-08-14) removed horizontal overflow on small screens, brought header/icon tap targets to 44px, added the typeahead dropdown to the mobile header search panel, made the search filters panel collapsible on mobile, and added a native mobile nav menu to the admin layout.
 
 ### Authentication Status
 Configured securely via NextAuth utilizing JSON Web Tokens (JWT) for session strategy. Includes database persistence for users, supporting both email/password with verification OTPs and OAuth (Google).

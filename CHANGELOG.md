@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-14 (Mobile Usability Pass)
+
+**Summary:** Passed across the storefront to remove mobile overflow and improve touch ergonomics. Header icon buttons are now 44px tap targets (h-11 w-11 on mobile), the mobile header row shrinks to fit 320px screens, and the mobile search panel now shows the same typeahead autocomplete dropdown as desktop (blur/dismiss logic reused). Product cards and grids tighten to `gap-3` below `md` and the card title/price row no longer overflows; the wishlist heart is a 40px target. Product detail thumbnails scroll horizontally when they overflow, the qty/add-to-cart controls wrap, and the cart item rows shrink the media block to 80px on small phones (stepper + line price always fit). The search page sort control becomes full-width and a "Filters" toggle shows the filters panel on mobile (panel hidden below `lg` until opened). Checkout's address-mode toggle stacks into a two-row control on mobile. The account nav and admin nav keep 44px row targets; the admin layout gains a sticky mobile header with a native `<details>` menu that reveals the same nav links as the desktop sidebar. ESLint and `next build` both pass.
+
+**Affected files:** `components/SiteHeader.jsx`, `components/ProductCard.jsx`, `app/products/page.js`, `app/search/page.js`, `app/products/[slug]/page.js`, `app/wishlist/page.js`, `app/categories/page.js`, `app/categories/[slug]/page.js`, `app/collections/[slug]/page.js`, `app/cart/page.js`, `app/checkout/page.js`, `app/account/layout.js`, `app/account/addresses/page.js`, `app/admin/layout.js`
+
+**Related decision:** None.
+
 ## 2026-08-14 (Studio Video Auto-Hiding Controls)
 
 **Summary:** The play/pause button on the home page studio video banner now fades out after 3 seconds. It reappears on hover, stays visible while the video is paused, and restarts its hide timer after the user resumes playback.

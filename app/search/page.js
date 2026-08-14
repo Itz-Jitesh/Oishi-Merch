@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { Search as SearchIcon } from "lucide-react";
+import { ChevronDown, Search as SearchIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -24,6 +24,7 @@ function SearchContent() {
   const [sort, setSort] = useState(initialSort);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const toggle = (c) =>
     setSelected((s) => (s.includes(c) ? s.filter((x) => x !== c) : [...s, c]));
@@ -67,7 +68,7 @@ function SearchContent() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-7xl px-4 py-8">
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row">
           <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-card px-4 py-3 shadow-[var(--shadow-card)]">
             <SearchIcon className="h-4 w-4 text-muted-foreground" />
             <input
@@ -80,13 +81,26 @@ function SearchContent() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-full border border-border bg-card px-4 py-3 text-sm"
+            className="w-full rounded-full border border-border bg-card px-4 py-3 text-sm sm:w-auto"
           >
             <option value="popular">Most popular</option>
             <option value="price-asc">Price: low to high</option>
             <option value="price-desc">Price: high to low</option>
           </select>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+          className="mb-4 flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium lg:hidden"
+        >
+          <ChevronDown
+            size={16}
+            className={`transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+          />
+          Filters
+        </button>
 
         {activeFilters.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
@@ -99,7 +113,7 @@ function SearchContent() {
         )}
 
         <div className="grid gap-8 lg:grid-cols-[220px_1fr_180px]">
-          <aside className="space-y-6">
+          <aside className={`space-y-6 ${filtersOpen ? "" : "hidden"} lg:block`}>
             <div>
               <h2 className="mb-3 font-display text-lg">Search Filters</h2>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Category</p>
@@ -132,7 +146,7 @@ function SearchContent() {
             </div>
           </aside>
 
-          <section className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          <section className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
             {loading ? (
               <p className="col-span-full py-12 text-center text-muted-foreground">
                 Loading products…

@@ -5,7 +5,7 @@ import { CATEGORIES, PRODUCTS } from "@/data/product";
 export default function CategoriesPage() {
   return (
     <PageShell title="Categories" subtitle="Pick a lane. All drops sorted by silhouette." wide>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
         {CATEGORIES.map((c) => {
           const sample = PRODUCTS.find((p) => p.category === c.name);
           return (

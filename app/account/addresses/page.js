@@ -149,7 +149,7 @@ export default function AddressesPage() {
             </div>
             <button
               onClick={() => handleOpenEdit(a)}
-              className="text-sm text-primary hover:underline"
+              className="rounded-lg px-3 py-2 text-sm text-primary hover:underline"
             >
               Edit
             </button>

@@ -95,7 +95,7 @@ export default function ProductDetail() {
               ) : null}
             </div>
             {images.length > 1 ? (
-              <div className="flex gap-3">
+              <div className="flex gap-3 overflow-x-auto pb-1">
                 {images.map((img, i) => (
                   <button
                     key={img}
@@ -142,13 +142,13 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <div className="inline-flex items-center rounded-full border border-border">
                 <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2">−</button>
                 <span className="min-w-8 text-center">{qty}</span>
                 <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2">+</button>
               </div>
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow"
+              <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow sm:px-6"
                 onClick={handlerAddToCart}>
                 <ShoppingBag className="h-4 w-4" /> Add to cart
               </button>
@@ -176,7 +176,7 @@ export default function ProductDetail() {
 
         <section className="mt-16">
           <h2 className="mb-6 font-display text-2xl">You may also like</h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             {related.map((p) => (
 
               <ProductCard key={p.id} product={p} />

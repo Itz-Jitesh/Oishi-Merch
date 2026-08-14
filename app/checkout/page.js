@@ -261,11 +261,11 @@ export default function CheckoutPage() {
               <h2 className="font-display text-xl text-foreground">Shipping address</h2>
 
               {isAuthed ? (
-                <div className="mt-4 flex gap-2 rounded-full border border-border p-1">
+                <div className="mt-4 flex flex-col gap-2 rounded-2xl border border-border p-1 sm:flex-row sm:rounded-full">
                   <button
                     type="button"
                     onClick={() => setAddressMode("manual")}
-                    className={`rounded-full px-4 py-1.5 text-sm transition ${addressMode === "manual"
+                    className={`w-full rounded-full px-4 py-2.5 text-sm transition sm:w-auto ${addressMode === "manual"
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground"
                       }`}
@@ -275,7 +275,7 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={switchToSavedMode}
-                    className={`rounded-full px-4 py-1.5 text-sm transition ${addressMode === "saved"
+                    className={`w-full rounded-full px-4 py-2.5 text-sm transition sm:w-auto ${addressMode === "saved"
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground"
                       }`}

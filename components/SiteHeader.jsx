@@ -68,11 +68,11 @@ export function SiteHeader() {
         Free shipping over ₹60 · New Winter '26 drop is live
       </div>
 
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-5">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 md:gap-4 md:px-5">
         {/* Mobile menu */}
         <button
           onClick={() => setOpen(true)}
-          className="grid h-10 w-10 place-items-center rounded-xl text-foreground md:hidden"
+          className="grid h-11 w-11 place-items-center rounded-xl text-foreground md:hidden"
           aria-label="Open menu"
         >
           <Menu size={20} />
@@ -80,10 +80,10 @@ export function SiteHeader() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-base font-bold text-primary-foreground">
+          <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-base font-bold text-primary-foreground md:h-9 md:w-9">
             お
           </span>
-          <span className="font-display text-lg font-bold tracking-tight text-foreground">
+          <span className="font-display text-base font-bold tracking-tight text-foreground md:text-lg">
             Oishi Merch
           </span>
         </Link>
@@ -149,7 +149,7 @@ export function SiteHeader() {
         {/* Mobile search trigger */}
         <button
           onClick={() => setSearchOpen((v) => !v)}
-          className="ml-auto grid h-10 w-10 place-items-center rounded-xl text-foreground hover:bg-secondary md:hidden"
+          className="ml-auto grid h-11 w-11 place-items-center rounded-xl text-foreground hover:bg-secondary md:hidden"
           aria-label="Search"
         >
           <Search size={18} />
@@ -173,7 +173,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/cart"
-            className="relative grid h-10 w-10 place-items-center rounded-xl text-foreground hover:bg-secondary"
+            className="relative grid h-11 w-11 place-items-center rounded-xl text-foreground hover:bg-secondary md:h-10 md:w-10"
             aria-label="Cart"
           >
             <ShoppingBag size={18} />
@@ -184,8 +184,15 @@ export function SiteHeader() {
 
       {/* Mobile search panel */}
       {searchOpen ? (
-        <div className="border-t border-border bg-background px-5 py-3 md:hidden">
-          <div className="relative">
+        <div className="border-t border-border bg-background px-4 py-3 md:hidden md:px-5">
+          <div
+            className="relative"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) {
+                setSuggestionsOpen(false);
+              }
+            }}
+          >
             <Search
               size={16}
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -197,8 +204,28 @@ export function SiteHeader() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchSubmit}
-              className="h-10 w-full rounded-xl border border-input bg-card pl-9 pr-3 text-sm focus:border-primary focus:outline-none"
+              className="h-11 w-full rounded-xl border border-input bg-card pl-9 pr-3 text-sm focus:border-primary focus:outline-none"
             />
+            {suggestionsOpen && suggestions.length > 0 ? (
+              <div
+                aria-label="Search suggestions"
+                className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-lg"
+              >
+                {suggestions.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/products/${s.slug}`}
+                    onClick={() => setSuggestionsOpen(false)}
+                    className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-secondary"
+                  >
+                    <span className="truncate text-foreground">{s.name}</span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {s.category}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -208,7 +235,11 @@ export function SiteHeader() {
         <div className="fixed inset-0 z-50 bg-background p-6 md:hidden">
           <div className="mb-8 flex items-center justify-between">
             <span className="font-display text-lg font-bold">Menu</span>
-            <button onClick={() => setOpen(false)} aria-label="Close menu">
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close menu"
+              className="grid h-11 w-11 place-items-center rounded-xl hover:bg-secondary"
+            >
               <X size={22} />
             </button>
           </div>

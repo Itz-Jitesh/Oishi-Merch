@@ -83,8 +83,8 @@ export function ProductCard({ product }) {
             </div>
           </div>
           <div className="mt-3 flex items-start justify-between gap-2">
-            <h3 className="text-sm font-medium text-foreground">{product.name}</h3>
-            <span className="text-sm font-semibold text-primary">₹{product.price}</span>
+            <h3 className="min-w-0 text-sm font-medium text-foreground">{product.name}</h3>
+            <span className="shrink-0 text-sm font-semibold text-primary">₹{product.price}</span>
           </div>
         </Link>
 
@@ -92,7 +92,7 @@ export function ProductCard({ product }) {
           type="button"
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
           onClick={handleToggleWishlist}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-border bg-background/80 text-foreground backdrop-blur transition hover:border-primary"
+          className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full border border-border bg-background/80 text-foreground backdrop-blur transition hover:border-primary"
         >
           <Heart className={`h-4 w-4 ${inWishlist ? "fill-primary text-primary" : ""}`} />
         </button>

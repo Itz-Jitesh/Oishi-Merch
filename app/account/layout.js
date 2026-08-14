@@ -24,7 +24,7 @@ export default function AccountLayout({ children }) {
                 key={n.href}
                 href={n.href}
                 exact={n.exact}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground hover:bg-secondary"
+                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-secondary"
                 activeClassName="bg-primary/10 text-primary font-medium"
               >
                 <n.icon className="h-4 w-4" /> {n.label}

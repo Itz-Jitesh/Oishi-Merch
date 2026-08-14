@@ -88,10 +88,10 @@ export default function CartPage() {
             {items.map((i) => (
               <article
                 key={i.id}
-                className="flex items-center gap-4 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]"
+                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:gap-4"
               >
                 <div
-                  className="h-24 w-24 shrink-0 rounded-xl"
+                  className="h-20 w-20 shrink-0 rounded-xl sm:h-24 sm:w-24"
                   style={{ background: `linear-gradient(135deg, ${i.color}, var(--background))` }}
                 />
                 <div className="flex flex-1 flex-col gap-1">
@@ -104,7 +104,7 @@ export default function CartPage() {
                     </div>
                     <button
                       onClick={() => remove(i.id, i.size)}
-                      className="text-muted-foreground hover:text-primary"
+                      className="p-2 text-muted-foreground hover:text-primary"
                       aria-label="Remove"
                     >
                       <Trash2 className="h-4 w-4" />

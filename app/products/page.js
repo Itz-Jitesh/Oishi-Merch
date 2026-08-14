@@ -50,7 +50,7 @@ export default function ProductsPage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_180px]">
-          <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 ">
+          <section className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 ">
             {list.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
