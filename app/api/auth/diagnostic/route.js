@@ -20,34 +20,45 @@ function redactUri(uri) {
 }
 
 export async function GET() {
-    const authSecret = process.env.AUTH_SECRET;
-    const nextAuthSecret = process.env.NEXTAUTH_SECRET;
-    const effectiveSecret = authSecret ?? nextAuthSecret;
+const authSecret = process.env.AUTH_SECRET;
+const nextAuthSecret = process.env.NEXTAUTH_SECRET;
+const effectiveSecret = authSecret ?? nextAuthSecret;
+const nextauthUrl = process.env.NEXTAUTH_URL || "";
+const authUrl = process.env.AUTH_URL || "";
+const pointsAtLocalhost = /localhost|127\.0\.0\.1/.test(nextauthUrl) || /localhost|127\.0\.0\.1/.test(authUrl);
 
-    const report = {
-        verdict: "",
-        authSecret: secretInfo("AUTH_SECRET"),
-        nextAuthSecret: secretInfo("NEXTAUTH_SECRET"),
-        secretsConflict: Boolean(
-            authSecret && nextAuthSecret && authSecret !== nextAuthSecret
-        ),
-        effectiveSecretTooShort:
-            effectiveSecret != null && effectiveSecret.length < 32,
-        nextauthUrl: process.env.NEXTAUTH_URL || "NOT SET",
-        authUrl: process.env.AUTH_URL || "NOT SET",
-        authTrustHost: process.env.AUTH_TRUST_HOST || "NOT SET",
-        vercel: process.env.VERCEL || "NOT SET",
-        vercelEnv: process.env.VERCEL_ENV || "NOT SET",
-        vercelUrl: process.env.VERCEL_URL || "NOT SET",
-        googleClientId: process.env.GOOGLE_CLIENT_ID ? "set" : "NOT SET",
-        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ? "set" : "NOT SET",
-        mongodbUri: process.env.MONGODB_URI
-            ? redactUri(process.env.MONGODB_URI)
-            : "NOT SET",
-        db: "not attempted",
-    };
+const report = {
+    verdict: "",
+    authSecret: secretInfo("AUTH_SECRET"),
+    nextAuthSecret: secretInfo("NEXTAUTH_SECRET"),
+    secretsConflict: Boolean(
+        authSecret && nextAuthSecret && authSecret !== nextAuthSecret
+    ),
+    effectiveSecretTooShort:
+        effectiveSecret != null && effectiveSecret.length < 32,
+    nextauthUrlPointsAtLocalhost: pointsAtLocalhost,
+    nextauthUrl: nextauthUrl || "NOT SET",
+    authUrl: authUrl || "NOT SET",
+    authTrustHost: process.env.AUTH_TRUST_HOST || "NOT SET",
+    vercel: process.env.VERCEL || "NOT SET",
+    vercelEnv: process.env.VERCEL_ENV || "NOT SET",
+    vercelUrl: process.env.VERCEL_URL || "NOT SET",
+    googleClientId: process.env.GOOGLE_CLIENT_ID ? "set" : "NOT SET",
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ? "set" : "NOT SET",
+    mongodbUri: process.env.MONGODB_URI
+        ? redactUri(process.env.MONGODB_URI)
+        : "NOT SET",
+    db: "not attempted",
+};
 
-    if (effectiveSecret == null) {
+if (pointsAtLocalhost) {
+    report.verdict =
+        "NEXTAUTH_URL/AUTH_URL points at localhost while running on Vercel. After a " +
+        "successful sign-in, NextAuth redirects the browser to http://localhost:3000, which " +
+        "cannot load in production, so login appears broken / never persists. Fix: DELETE " +
+        "NEXTAUTH_URL (and AUTH_URL if present) from Vercel Settings -> Environment Variables " +
+        "-> redeploy. Vercel derives the host automatically.";
+} else if (effectiveSecret == null) {
         report.verdict =
             "AUTH_SECRET/NEXTAUTH_SECRET is MISSING. This is why login never persists — " +
             "NextAuth cannot create session cookies without it. Fix: Vercel -> Settings -> " +

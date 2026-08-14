@@ -6,6 +6,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
 const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+const authUrl = process.env.NEXTAUTH_URL ?? process.env.AUTH_URL;
 
 if (!authSecret) {
     console.error(
@@ -18,6 +19,19 @@ if (!authSecret) {
         "[auth] FATAL: AUTH_SECRET is only " + authSecret.length + " characters. " +
             "NextAuth v5 cannot encrypt session JWTs with a secret shorter than 32 chars. " +
             "Generate a strong one with: openssl rand -base64 32"
+    );
+}
+
+if (
+    authUrl &&
+    /localhost|127\.0\.0\.1/.test(authUrl) &&
+    process.env.VERCEL === "1"
+) {
+    console.error(
+        "[auth] FATAL: NEXTAUTH_URL / AUTH_URL is '" + authUrl + "' while running on Vercel. " +
+            "After sign-in, NextAuth redirects the browser there and login appears to fail. " +
+            "Delete NEXTAUTH_URL (and AUTH_URL) from Vercel Settings → Environment Variables " +
+            "and redeploy; Vercel derives the host automatically."
     );
 }
 

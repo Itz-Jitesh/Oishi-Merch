@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Root cause found: NEXTAUTH_URL=http://localhost:3000 in Vercel env)
+
+**Summary:** Production diagnostic (`GET /api/auth/diagnostic`) revealed the actual cause of the "login never persists" bug: the Vercel environment had `NEXTAUTH_URL` set to `http://localhost:3000`. The secret (`NEXTAUTH_SECRET`, 44 chars) was fine, DB connected, Google creds set. After any successful sign-in, NextAuth redirects the browser to `localhost:3000`, which cannot load in production — so login appears broken and no working session is seen. Fix (user action): delete `NEXTAUTH_URL` (and `AUTH_URL`) from Vercel Settings → Environment Variables and redeploy; Vercel derives the host automatically. The diagnostic endpoint now detects `localhost`/`127.0.0.1` in `NEXTAUTH_URL`/`AUTH_URL` and reports a `nextauthUrlPointsAtLocalhost` flag plus a verdict naming the fix. `auth.js` also logs a `[auth] FATAL:` message at module load when running on Vercel with a localhost auth URL. Verified locally by simulating the production env (VERCEL=1, VERCEL_ENV=production, NEXTAUTH_URL=http://localhost:3000): the diagnostic verdict and the auth.js FATAL both fire.
+
+**Affected files:** `app/app/api/auth/diagnostic/route.js`, `auth.js`, `CHANGELOG.md`, `PROJECT_STATE.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Browser-visible auth diagnostics)
 
 **Summary:** User cannot see Vercel Runtime Logs, so diagnostics are now surfaced in the browser instead of the console. Added `GET /api/auth/diagnostic` which returns a JSON report on the request's own server runtime: `AUTH_SECRET`/`NEXTAUTH_SECRET` presence + length (values never leaked), secret conflict flag, effective-secret-too-short flag, `NEXTAUTH_URL`/`AUTH_URL`/`AUTH_TRUST_HOST`, Vercel flags, Google client presence, redacted MongoDB host, live DB connectivity, and a human-readable `verdict`. The login page no longer hides the real failure: instead of only a generic toast, it now displays the raw `result.error` / thrown error message in a visible banner (keeps the friendly "Invalid email or password" toast for `CredentialsSignin`).
