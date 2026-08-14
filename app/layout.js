@@ -20,6 +20,9 @@ export const metadata = {
     template: "%s — Oishi Merch",
   },
   description: "Anime merchandise for fans who wear the worlds they love.",
+  icons: {
+    icon: "/favicon.svg",
+  },
   openGraph: {
     title: "Oishi Merch",
     description: "Anime merchandise for fans who wear the worlds they love.",

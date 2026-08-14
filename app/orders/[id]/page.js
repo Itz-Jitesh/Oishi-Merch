@@ -19,10 +19,16 @@ export default function OrderDetail() {
         <section className="space-y-3">
           {items.map((p) => (
             <div key={p.id} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-              <div
-                className="h-16 w-16 rounded-xl"
-                style={{ background: `linear-gradient(135deg,${p.color},var(--background))` }}
-              />
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-secondary">
+                {p.images?.[0] ? (
+                  <img
+                    src={p.images[0]}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                ) : null}
+              </div>
               <div className="flex-1">
                 <p className="font-medium">{p.name}</p>
                 <p className="text-xs text-muted-foreground">Qty 1</p>

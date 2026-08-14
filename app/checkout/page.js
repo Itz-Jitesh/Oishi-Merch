@@ -384,11 +384,16 @@ export default function CheckoutPage() {
               <ul className="space-y-4">
                 {items.map((i) => (
                   <li key={i.id} className="flex items-center gap-3">
-                    <div
-                      className="h-14 w-14 shrink-0 rounded-xl border border-border"
-                      style={{ background: `linear-gradient(135deg, ${i.color}, var(--background))` }}
-                      aria-hidden="true"
-                    />
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary">
+                      {i.images?.[0] ? (
+                        <img
+                          src={i.images[0]}
+                          alt={i.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : null}
+                    </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-foreground">{i.name}</p>
                       <p className="text-xs text-muted-foreground">

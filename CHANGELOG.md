@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-08-15 (Use favicon.svg as the browser tab logo)
+
+**Summary:** The root layout's `metadata` previously defined no `icons`, so the browser tab used the auto-detected `app/favicon.ico`. Added `icons: { icon: "/favicon.svg" }` to the root layout metadata, which renders `<link rel="icon" href="/favicon.svg"/>` and lets modern browsers show the user-provided logo (`public/favicon.svg`, an "お" mark) in the tab. The `.ico` remains as a fallback. Verified locally: both icon links are emitted and `/favicon.svg` serves as `image/svg+xml`.
+
+**Affected files:** `app/app/layout.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
+## 2026-08-15 (Fix blank product thumbnails on cart / checkout / order pages)
+
+**Summary:** Cart, checkout order-summary, and order-detail pages rendered product thumbnails with a CSS gradient placeholder built from `i.color`/`p.color`, but products have no `color` field (they have an `images` array), so the gradient was invalid and the box rendered blank. Replaced all three with the same convention used by `ProductCard`: render the first product image (`images[0]`) in an `<img>` with `object-cover`, keeping the rounded container with an `overflow-hidden` neutral `bg-secondary` fallback. Verified the cart API returns `images` and the referenced webp files exist in `public/products/`.
+
+**Affected files:** `app/app/cart/page.js`, `app/app/checkout/page.js`, `app/app/orders/[id]/page.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Second root cause: middleware could not read the `__Secure-` session cookie)
 
 **Summary:** After the env fix (NEXTAUTH_URL removed), login on Vercel correctly created `__Secure-authjs.session-token` (NextAuth v5 prefixes the cookie name with `__Secure-` on HTTPS; locally over HTTP it is the unprefixed `authjs.session-token`). But `proxy.js` (middleware) called `getToken()` without `secureCookie`, and `@auth/core`'s `getToken` defaults `secureCookie` to `false` — so the middleware looked for the unprefixed cookie name and used the unprefixed JWT salt, found nothing, and redirected even authenticated users away from protected routes ("not staying logged in"). Fixed by passing `secureCookie: process.env.VERCEL === "1" || req.url.startsWith("https://")` to `getToken`, so the middleware reads the same cookie name and salt that production writes. Verified against the real library code: a token minted with the `__Secure-` salt decodes with `secureCookie:true` and returns `null` with `secureCookie:false` (the bug). Local regression re-verified: credentials login → `/account` 200 with session, 307 without.
