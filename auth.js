@@ -23,25 +23,53 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
 
             async authorize(credentials) {
-                await connectDB();
-
-                const { email, password } = credentials;
-
-                if (!email || !password) {
+                try {
+                    await connectDB();
+                } catch (err) {
+                    console.error("[auth][authorize] connectDB failed:", err.message);
                     return null;
                 }
 
-                const user = await User.findOne({ email });
+                const email = String(credentials?.email || "")
+                    .trim()
+                    .toLowerCase();
+                const password = credentials?.password || "";
+
+                if (!email || !password) {
+                    console.log("[auth][authorize] missing email or password");
+                    return null;
+                }
+
+                let user;
+                try {
+                    user = await User.findOne({ email });
+                    console.log(
+                        "[auth][authorize] user lookup:",
+                        email,
+                        user ? "FOUND" : "NOT FOUND"
+                    );
+                } catch (err) {
+                    console.error("[auth][authorize] user lookup error:", err);
+                    return null;
+                }
 
                 if (!user) {
                     return null;
                 }
 
                 if (!user.password) {
+                    console.log("[auth][authorize] user has no password stored");
                     return null;
                 }
 
-                const isMatch = await bcrypt.compare(password, user.password);
+                let isMatch = false;
+                try {
+                    isMatch = await bcrypt.compare(password, user.password);
+                    console.log("[auth][authorize] password match:", isMatch);
+                } catch (err) {
+                    console.error("[auth][authorize] bcrypt.compare error:", err);
+                    return null;
+                }
 
                 if (!isMatch) {
                     return null

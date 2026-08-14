@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Diagnostics + Email Normalization for Credentials Login)
+
+**Summary:** Credentials login worked locally but failed on Vercel (no session cookie created) while signup and OTP flows worked — signup/OTP never touch the NextAuth session secret, login does. The code itself was verified working end-to-end locally (cookie created, session readable, protected routes pass). To pinpoint the production-only failure, `authorize` in `auth.js` now logs each step with `[auth][authorize]` markers (connectDB failure, user lookup found/not-found, password present, bcrypt match result, thrown errors). Also fixed a latent bug: `authorize` now trims and lowercases the submitted email before the lookup, matching the schema's `lowercase: true` storage, so logging in with a different case no longer fails to find the user (verified: `OISHI_TEST@EXAMPLE.COM` now logs in successfully).
+
+**Affected files:** `auth.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Show Category Images on /categories Page)
 
 **Summary:** The `/categories` index page was rendering a colored gradient placeholder for each category card instead of the actual category image. It now renders the `image` field from the `CATEGORIES` data (`/categories/*.webp`, all present in `public/categories/`) with the same `object-cover` + hover-zoom treatment used on the home page, keeping the `bg-secondary` behind the image as a fallback. The now-unused per-category product `sample` lookup was removed.
