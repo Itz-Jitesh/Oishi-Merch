@@ -55,6 +55,7 @@ Designed to be deployed on Vercel or any Node.js environment supporting Next.js.
 No automated tests are currently implemented. 
 
 ### Current Known Issues
+- **Production auth (Vercel): login never persists** — Google OAuth completes and credentials sign-in succeeds locally, but no session cookie is created on Vercel. Diagnosis strongly points to `AUTH_SECRET`/`NEXTAUTH_SECRET` being missing or mismatched in the Vercel environment (session-JWT creation is the only login step that needs the secret). Verify with `GET /api/auth/diagnostic` (browser-visible, no logs needed). Local credentials login is confirmed working end-to-end.
 - UI still relies heavily on mock data, leading to a disconnect between the Database and the Frontend representation in some areas.
 - `/search` and the header typeahead now read from the MongoDB `Product` collection, while most other storefront pages (product catalog, home, collections) still use local arrays from `data/product.js`; catalog edits require a re-seed to be reflected in search. The wishlist resolves product slugs against the same local `data/product.js` catalog for consistency with `/products/[slug]`.
 - Semantic search requires `NVIDIA_API_KEY`, `NVIDIA_EMBEDDING_MODEL`, and `NVIDIA_EMBEDDING_URL` (currently empty placeholders) and a successful seed with embeddings.

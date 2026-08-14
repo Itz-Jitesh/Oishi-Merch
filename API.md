@@ -125,6 +125,13 @@ The following wishlist endpoints exist under `app/api/wishlist/`:
 
 APIs are partially authenticated. NextAuth manages sessions via JWT. Secure routes verify the session token.
 
+### `/auth/diagnostic`
+- **Method**: GET
+- **Path**: `/api/auth/diagnostic`
+- **Description**: Browser-visible auth environment report used to debug production-only login failures (no access to Vercel Runtime Logs needed). Reports presence and length of `AUTH_SECRET` / `NEXTAUTH_SECRET` (never the values), whether the two secrets conflict, whether the effective secret is shorter than 32 chars, `NEXTAUTH_URL`, `AUTH_URL`, `AUTH_TRUST_HOST`, Vercel environment flags, Google client ID/secret presence, the MongoDB URI host (redacted), and a live DB connectivity check. Includes a `verdict` field stating the likely cause and fix.
+- **Response**: JSON object with the fields above.
+- **Authentication**: None (diagnostic only; values are redacted to presence/length/host).
+
 ## Current Data Access
 
 Most frontend components still import local JavaScript arrays from `lib/products.js`, but Authentication and Account pages use real API calls to the above endpoints, connected to MongoDB.

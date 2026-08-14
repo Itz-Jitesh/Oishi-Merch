@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Browser-visible auth diagnostics)
+
+**Summary:** User cannot see Vercel Runtime Logs, so diagnostics are now surfaced in the browser instead of the console. Added `GET /api/auth/diagnostic` which returns a JSON report on the request's own server runtime: `AUTH_SECRET`/`NEXTAUTH_SECRET` presence + length (values never leaked), secret conflict flag, effective-secret-too-short flag, `NEXTAUTH_URL`/`AUTH_URL`/`AUTH_TRUST_HOST`, Vercel flags, Google client presence, redacted MongoDB host, live DB connectivity, and a human-readable `verdict`. The login page no longer hides the real failure: instead of only a generic toast, it now displays the raw `result.error` / thrown error message in a visible banner (keeps the friendly "Invalid email or password" toast for `CredentialsSignin`).
+
+**Affected files:** `app/app/api/auth/diagnostic/route.js` (new), `app/app/auth/login/page.js`, `API.md`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Explicit AUTH_SECRET wiring + loud init-time diagnostics)
 
 **Summary:** Google OAuth now completes on production but no session cookie is created afterward — the failure is in session-JWT creation, which is the only login step that depends on `AUTH_SECRET`/`NEXTAUTH_SECRET` (the Google round-trip and DB writes don't). `auth.js` now resolves `AUTH_SECRET ?? NEXTAUTH_SECRET` explicitly at module load, passes it as `secret` to `NextAuth(...)`, and logs a loud `[auth] FATAL:` message if the secret is missing or shorter than 32 characters (NextAuth v5 cannot encrypt session JWEs with a short secret). If `MissingSecret` or the FATAL warning appears in Vercel Runtime Logs after the next deploy, the fix is purely environment: set `AUTH_SECRET` (or `NEXTAUTH_SECRET`) on Vercel and redeploy. Re-verified locally: credentials login still creates the `authjs.session-token` cookie and the warnings are absent with the local 44-char secret.

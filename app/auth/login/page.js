@@ -17,11 +17,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       const result = await signIn("credentials", {
@@ -31,7 +33,12 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error("Invalid email or password.");
+        if (result.error === "CredentialsSignin") {
+          toast.error("Invalid email or password.");
+        } else {
+          setError(result.error);
+          toast.error("Login failed. See details below.");
+        }
         return;
       }
 
@@ -40,7 +47,9 @@ export default function LoginPage() {
       router.refresh();
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Something went wrong. Please try again.");
+      const msg = error?.message || "Something went wrong. Please try again.";
+      setError(msg);
+      toast.error("Login failed. See details below.");
     } finally {
       setLoading(false);
     }
@@ -66,6 +75,11 @@ export default function LoginPage() {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="rounded-lg border border-destructive bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive break-words">
+            {error}
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
