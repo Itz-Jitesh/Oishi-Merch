@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-15 (Show Category Images on /categories Page)
+
+**Summary:** The `/categories` index page was rendering a colored gradient placeholder for each category card instead of the actual category image. It now renders the `image` field from the `CATEGORIES` data (`/categories/*.webp`, all present in `public/categories/`) with the same `object-cover` + hover-zoom treatment used on the home page, keeping the `bg-secondary` behind the image as a fallback. The now-unused per-category product `sample` lookup was removed.
+
+**Affected files:** `app/categories/page.js`, `CHANGELOG.md`
+
+**Related decision:** None.
+
 ## 2026-08-15 (Redesign Mobile Menu Drawer)
 
 **Summary:** The mobile hamburger menu previously opened as a full-screen, full-width transparent panel. It is now a solid `bg-card` drawer that slides in from the left edge via a `translate-x` transition, pinned with `fixed`/`inset-y-0` so it stays put while scrolling and takes the full vertical height. It spans only `w-[85%] max-w-sm` horizontally, leaving a strip of the page visible behind it; tapping that exposed strip closes the drawer. The wrapper is always mounted (for the slide-in/out animation) with `pointer-events-none` when closed and `inert` + `aria-hidden` to keep it out of the focus/a11y tree when closed.
