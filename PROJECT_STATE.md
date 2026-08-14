@@ -1,6 +1,6 @@
 # Project State
 
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-14
 
 ## Current Phase
 
@@ -13,6 +13,7 @@ The project is currently transitioning from a static/client-side UI prototype to
 - All primary consumer-facing and admin-facing pages built with mock data.
 - **Authentication**: Backend setup with NextAuth, MongoDB integration, credential and Google OAuth strategies.
 - **Database Connection**: MongoDB connection caching and models for User and Product established.
+- **Security Page**: Conditional UI rendering for Google OAuth accounts (showing Google auth status card) vs email/password accounts (showing password change form), enforced at both client and API route levels.
 
 ## In Progress
 

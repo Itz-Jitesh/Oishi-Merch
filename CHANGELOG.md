@@ -1,12 +1,22 @@
 # Changelog
 
-## 2026-08-13
+## 2026-08-14
 
-**Summary:** Added converted `AuthRequiredDialog` Next.js component to prompt unauthenticated users before redirecting on protected actions or views.
+**Summary:** Updated `/account/security` page and `/api/account/security` API route to restrict password changes for Google OAuth authenticated users while displaying the password change form for email/password authenticated users.
 
-**Affected files:** `components/AuthRequiredDialog.jsx`
+**Affected files:** `app/account/security/page.js`, `app/api/account/security/route.js`
 
 **Related decision:** None.
+
+
+## 2026-08-13
+
+**Summary:** Added `AddressFormDialog` component, `EMPTY_ADDRESS` helper, and connected the `/account/addresses` page to trigger address addition/editing in a popup modal dialog.
+
+**Affected files:** `components/AddressFormDialog.jsx`, `lib/addresses.js`, `app/account/addresses/page.js`
+
+**Related decision:** None.
+
 
 ## 2026-08-07
 
