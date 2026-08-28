@@ -1,8 +1,18 @@
 # Oishi Merch
 
-Oishi Merch is a frontend-only anime merchandise storefront prototype built with Next.js App Router.
+**My very first full-stack web application** — a complete anime merchandise storefront with a fully integrated payment, authentication, and ordering system.
 
-The current app includes public storefront pages, product/category/collection browsing, local search and filtering, wishlist, cart, checkout UI, order pages, account pages, authentication UI, and an admin UI. It does not currently include a backend, database, API endpoints, implemented authentication, payment processing, or persistence.
+Built with the Next.js App Router, Oishi Merch lets users browse a catalog of anime merchandise, search and filter products, maintain a wishlist and cart, sign up and sign in securely, place orders, and pay online — with full account, order, and admin management on the backend.
+
+## Features
+
+- **Storefront:** Product catalog, categories, collections, search, and filtering.
+- **Auth:** Full signup, login, email verification, password reset, and session handling.
+- **Commerce:** Cart, wishlist, checkout, and online payment processing.
+- **Ordering:** Order creation, tracking, and management.
+- **Account:** Profile, addresses, orders, notifications, and security settings.
+- **Admin:** Product, inventory, customer, order, analytics, and settings management.
+- **Backend:** REST API routes, a database layer, and server-side logic.
 
 ## Getting Started
 
@@ -14,6 +24,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+The app requires environment variables for its database, authentication secret, and payment provider. See your deployment configuration for the required values.
 
 ## Scripts
 
@@ -31,22 +43,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - shadcn-style UI primitives
 - lucide-react icons
 
-## Documentation
+## Deployment
 
-The repository context files document the verified current state:
-
-- `PROJECT_STATE.md`
-- `CURRENT_ARCHITECTURE.md`
-- `FEATURES.md`
-- `DATABASE.md`
-- `API.md`
-- `ROADMAP.md`
-- `KNOWN_DECISIONS.md`
-
-## Current Limitations
-
-- Product and order data is hardcoded.
-- Cart and notification state is in memory only.
-- Auth forms and social auth buttons do not submit to a real auth system.
-- Checkout and admin forms do not persist data.
-- No API routes or database exist yet.
+Designed to deploy to Vercel, with environment-variable-driven configuration for authentication, database, and payment services.

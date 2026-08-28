@@ -39,3 +39,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# internal repository documentation
+AGENTS.md
+API.md
+CHANGELOG.md
+CLAUDE.md
+CURRENT_ARCHITECTURE.md
+DATABASE.md
+FEATURES.md
+KNOWN_DECISION.md
+KNOWN_DECISIONS.md
+PROJECT_CONTEXT.md
+PROJECT_STATE.md
+ROADMAP.md
+VECTOR_SEARCH_FEATURE_DETAILS.md
+implementation_plan.md
+
+# dev-only helper files
+replace_currency.js
+proxy.js
+scripts/
