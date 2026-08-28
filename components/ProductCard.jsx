@@ -2,12 +2,49 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 
 export function ProductCard({ product }) {
   const image = product.images && product.images.length > 0 ? product.images[0] : null;
   const [inWishlist, setInWishlist] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (addingToCart) return;
+
+    setAddingToCart(true);
+
+    try {
+      const response = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: product.id,
+          size: "M",
+          quantity: 1,
+        }),
+      });
+
+      if (!response.ok) {
+        toast.error("Couldn't add item to cart.");
+        return;
+      }
+
+      const data = await response.json();
+      toast.success(data.message || `${product.name} added to cart`);
+    } catch (error) {
+      toast.error("Couldn't add item to cart.");
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -76,10 +113,19 @@ export function ProductCard({ product }) {
                 className="h-full w-full object-cover"
               />
             ) : null}
-            <div className="absolute inset-x-0 bottom-0 flex justify-start p-4">
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-4">
               <span className="rounded-full bg-background/80 px-3 py-1 text-xs font-medium text-foreground backdrop-blur">
                 {product.category}
               </span>
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={addingToCart}
+                aria-label={`Add ${product.name} to cart`}
+                className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground shadow transition hover:bg-primary/90 disabled:opacity-60"
+              >
+                <ShoppingBag className="h-4 w-4" />
+              </button>
             </div>
           </div>
           <div className="mt-3 flex items-start justify-between gap-2">
