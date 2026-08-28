@@ -24,6 +24,7 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+or live link-https://oishi-merch.vercel.app
 
 The app requires environment variables for its database, authentication secret, and payment provider. See your deployment configuration for the required values.
 
